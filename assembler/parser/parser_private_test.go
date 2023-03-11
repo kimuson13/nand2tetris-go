@@ -109,8 +109,9 @@ func TestCommandType(t *testing.T) {
 }
 
 type Option[T any] func(val T)
+type ParserOption Option[*Parser]
 
-func p(opts ...Option[*Parser]) Parser {
+func p(opts ...ParserOption) Parser {
 	parser := &Parser{
 		commands:   []string{},
 		currentIdx: 0,
@@ -123,13 +124,13 @@ func p(opts ...Option[*Parser]) Parser {
 	return *parser
 }
 
-func commands(vals ...string) Option[*Parser] {
+func commands(vals ...string) ParserOption {
 	return func(val *Parser) {
 		val.commands = vals
 	}
 }
 
-func currentIdx(idx int) Option[*Parser] {
+func currentIdx(idx int) ParserOption {
 	return func(val *Parser) {
 		val.currentIdx = idx
 	}
