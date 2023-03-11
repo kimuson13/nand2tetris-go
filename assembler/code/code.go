@@ -10,14 +10,26 @@ type CCommand struct {
 	Jump *Jump
 }
 
+func (c *CCommand) Convert() string {
+	return ""
+}
+
 type ACommand struct {
 	Value  int
 	Symbol string
 }
 
+func (a *ACommand) Convert() string {
+	return ""
+}
+
 type LCommand struct {
 	Value  int
 	Symbol string
+}
+
+func (l *LCommand) Convert() string {
+	return ""
 }
 
 type Dest string
