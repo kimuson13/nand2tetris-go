@@ -17,7 +17,7 @@ func isLCommand(raw string) bool {
 }
 
 func toLCommand(raw string) (*LCommand, error) {
-	val := string(raw[0 : len(raw)-1])
+	val := string(raw[1 : len(raw)-1])
 
 	return &LCommand{value: 0, symbol: val}, nil
 }
