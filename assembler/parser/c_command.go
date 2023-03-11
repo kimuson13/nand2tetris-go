@@ -32,6 +32,20 @@ type CCommandStmt struct {
 	semiColonPos int
 }
 
+func isCComand(raw string) bool {
+	eqCnt := strings.Count(raw, "=")
+	if eqCnt > 1 {
+		return false
+	}
+
+	semiColonCnt := strings.Count(raw, ";")
+	if semiColonCnt > 1 {
+		return false
+	}
+
+	return true
+}
+
 func (c *CCommand) parse() code.Command {
 	return nil
 }
@@ -50,20 +64,6 @@ func toCCommand(raw string) (*CCommand, error) {
 	}
 
 	return cCommad, nil
-}
-
-func isCComand(raw string) bool {
-	eqCnt := strings.Count(raw, "=")
-	if eqCnt > 1 {
-		return false
-	}
-
-	semiColonCnt := strings.Count(raw, ";")
-	if semiColonCnt > 1 {
-		return false
-	}
-
-	return true
 }
 
 func genCCommandStmt(raw string) (CCommandStmt, error) {
