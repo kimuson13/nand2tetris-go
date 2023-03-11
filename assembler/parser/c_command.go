@@ -37,13 +37,15 @@ func isCComand(raw string) bool {
 	if eqCnt > 1 {
 		return false
 	}
+	eqIdx := strings.Index(raw, "=")
 
 	semiColonCnt := strings.Count(raw, ";")
 	if semiColonCnt > 1 {
 		return false
 	}
+	semiColonIdx := strings.Index(raw, ";")
 
-	return true
+	return eqIdx < semiColonIdx
 }
 
 func (c *CCommand) parse() code.Command {
