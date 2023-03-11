@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"strconv"
 	"strings"
 )
 
@@ -80,72 +79,22 @@ func (p *Parser) commandType() (Command, error) {
 
 	head := currentCommand[0]
 
-	// TODO: 切り分ける
 	isACommand := head == '@'
 	if isACommand {
-		val := string(currentCommand[0:])
-		i, err := strconv.Atoi(val)
-		if err != nil {
-			return nil, err
-		}
-
-		command := &ACommand{value: i, symbol: val}
-		return command, nil
+		return toACommand(currentCommand)
 	}
 
-	// TODO: 切り分ける
 	isLCommand := head == '('
 	if isLCommand {
-		val := string(currentCommand[0 : len(currentCommand)-1])
-
-		command := &LCommand{value: 0, symbol: val}
-		return command, nil
+		return toLCommand(currentCommand)
 	}
 
-	// TODO: 切り分ける
-	isIncludeEq := strings.Contains(currentCommand, "=")
-	eqCnt := strings.Count(currentCommand, "=")
-	eqIdx := strings.Index(currentCommand, "=")
-	if eqCnt > 1 {
-		return nil, ErrEqualCountTooMany
+	cCommand, err := toCCommand(currentCommand)
+	if err != nil {
+		return nil, err
 	}
-
-	isIncludeSemiColon := strings.Contains(currentCommand, ";")
-	semiColonCnt := strings.Count(currentCommand, ";")
-	semiColonIdx := strings.Index(currentCommand, ";")
-	if semiColonCnt > 1 {
-		return nil, ErrSemiColonTooMany
-	}
-
-	// dest=comp;jump
-	isCompDestJump := isIncludeEq && isIncludeSemiColon && eqIdx < semiColonIdx
-	if isCompDestJump {
-		dest := string(currentCommand[0:eqIdx])
-		comp := string(currentCommand[eqIdx:semiColonIdx])
-		jump := string(currentCommand[semiColonIdx:])
-
-		command := &CCommand{dest: dest, comp: comp, jump: jump}
-		return command, nil
-	}
-
-	// dest=comp
-	isDestJump := isIncludeEq && !isIncludeSemiColon
-	if isDestJump {
-		dest := string(currentCommand[0:eqIdx])
-		comp := string(currentCommand[eqIdx:])
-
-		command := &CCommand{dest: dest, comp: comp, jump: ""}
-		return command, nil
-	}
-
-	// comp;jump
-	isCompJump := !isIncludeEq && isIncludeSemiColon
-	if isCompJump {
-		comp := string(currentCommand[0:semiColonIdx])
-		jump := string(currentCommand[semiColonIdx:])
-
-		command := &CCommand{dest: "", comp: comp, jump: jump}
-		return command, nil
+	if cCommand != nil {
+		return cCommand, nil
 	}
 
 	return nil, ErrInvalidCommand
