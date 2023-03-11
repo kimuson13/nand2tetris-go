@@ -77,24 +77,16 @@ func (p *Parser) commandType() (Command, error) {
 		return nil, ErrEmptyString
 	}
 
-	head := currentCommand[0]
-
-	isACommand := head == '@'
-	if isACommand {
+	if isACommand(currentCommand) {
 		return toACommand(currentCommand)
 	}
 
-	isLCommand := head == '('
-	if isLCommand {
+	if isLCommand(currentCommand) {
 		return toLCommand(currentCommand)
 	}
 
-	cCommand, err := toCCommand(currentCommand)
-	if err != nil {
-		return nil, err
-	}
-	if cCommand != nil {
-		return cCommand, nil
+	if isCComand(currentCommand) {
+		return toCCommand(currentCommand)
 	}
 
 	return nil, ErrInvalidCommand

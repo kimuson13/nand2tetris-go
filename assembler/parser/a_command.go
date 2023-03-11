@@ -14,6 +14,11 @@ func (a *ACommand) parse() code.Command {
 	return nil
 }
 
+func isACommand(raw string) bool {
+	head := raw[0]
+	return head == '@'
+}
+
 func toACommand(raw string) (*ACommand, error) {
 	val := string(raw[0:])
 	i, err := strconv.Atoi(val)

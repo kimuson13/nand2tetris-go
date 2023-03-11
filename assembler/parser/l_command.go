@@ -11,6 +11,11 @@ func (l *LCommand) parse() code.Command {
 	return nil
 }
 
+func isLCommand(raw string) bool {
+	head := raw[0]
+	return head == '('
+}
+
 func toLCommand(raw string) (*LCommand, error) {
 	val := string(raw[0 : len(raw)-1])
 

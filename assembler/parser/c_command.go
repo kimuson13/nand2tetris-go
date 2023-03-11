@@ -39,10 +39,6 @@ func (c *CCommand) parse() code.Command {
 func toCCommand(raw string) (*CCommand, error) {
 	const TO_CCOMAND_ERR = "toCCommand error: %w"
 
-	if err := isValidCComand(raw); err != nil {
-		return nil, fmt.Errorf(TO_CCOMAND_ERR, err)
-	}
-
 	stmt, err := genCCommandStmt(raw)
 	if err != nil {
 		return nil, fmt.Errorf(TO_CCOMAND_ERR, err)
@@ -56,18 +52,18 @@ func toCCommand(raw string) (*CCommand, error) {
 	return cCommad, nil
 }
 
-func isValidCComand(raw string) error {
+func isCComand(raw string) bool {
 	eqCnt := strings.Count(raw, "=")
 	if eqCnt > 1 {
-		return ErrEqualCountTooMany
+		return false
 	}
 
 	semiColonCnt := strings.Count(raw, ";")
 	if semiColonCnt > 1 {
-		return ErrSemiColonTooMany
+		return false
 	}
 
-	return nil
+	return true
 }
 
 func genCCommandStmt(raw string) (CCommandStmt, error) {
