@@ -23,7 +23,7 @@ func TestIsCCommand(t *testing.T) {
 		tc := tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			if got := isCComand(tc.raw); got != tc.want {
+			if got := isCCommand(tc.raw); got != tc.want {
 				t.Errorf("want = %v, but got = %v", tc.want, got)
 			}
 		})
@@ -59,7 +59,101 @@ func TestGenCComandStmt(t *testing.T) {
 	}
 }
 
+func TestToDestCompJump(t *testing.T) {
+	testCases := map[string]struct {
+		in   string
+		want *CCommand
+	}{
+		"normal": {"hoge=huga;piyo", ccmd(pDest("hoge"), pComp("huga"), pJump("piyo"))},
+		"long":   {"hogehogehoge=hugahugahhh;pipipioooo", ccmd(pDest("hogehogehoge"), pComp("hugahugahhh"), pJump("pipipioooo"))},
+		"short":  {"a=b;c", ccmd(pDest("a"), pComp("b"), pJump("c"))},
+	}
+
+	for name, tc := range testCases {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			stmt, err := genCCommandStmt(tc.in)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			got, err := stmt.toDestCompJump()
+			if err != nil {
+				t.Error(err)
+			}
+
+			if diff := cmp.Diff(tc.want, got, cmp.AllowUnexported(CCommand{})); diff != "" {
+				t.Errorf("want != got\ndiff=%s", diff)
+			}
+		})
+	}
+}
+
+func TestToDestComp(t *testing.T) {
+	testCases := map[string]struct {
+		in   string
+		want *CCommand
+	}{
+		"normal": {"hoge=huga", ccmd(pDest("hoge"), pComp("huga"))},
+		"long":   {"hogehogehoge=hugahugahhh", ccmd(pDest("hogehogehoge"), pComp("hugahugahhh"))},
+		"short":  {"a=b", ccmd(pDest("a"), pComp("b"))},
+	}
+
+	for name, tc := range testCases {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			stmt, err := genCCommandStmt(tc.in)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			got, err := stmt.toDestComp()
+			if err != nil {
+				t.Error(err)
+			}
+
+			if diff := cmp.Diff(tc.want, got, cmp.AllowUnexported(CCommand{})); diff != "" {
+				t.Errorf("want != got\ndiff=%s", diff)
+			}
+		})
+	}
+}
+
+func TestToCompJump(t *testing.T) {
+	testCases := map[string]struct {
+		in   string
+		want *CCommand
+	}{
+		"normal": {"huga;piyo", ccmd(pComp("huga"), pJump("piyo"))},
+		"long":   {"hugahugahhh;pipipioooo", ccmd(pComp("hugahugahhh"), pJump("pipipioooo"))},
+		"short":  {"b;c", ccmd(pComp("b"), pJump("c"))},
+	}
+
+	for name, tc := range testCases {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			stmt, err := genCCommandStmt(tc.in)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			got, err := stmt.toCompJump()
+			if err != nil {
+				t.Error(err)
+			}
+
+			if diff := cmp.Diff(tc.want, got, cmp.AllowUnexported(CCommand{})); diff != "" {
+				t.Errorf("want != got\ndiff=%s", diff)
+			}
+		})
+	}
+}
+
 type CComandStmtOption = Option[*CCommandStmt]
+type CCommandOption = Option[*CCommand]
 
 func ccstmt(opts ...CComandStmtOption) CCommandStmt {
 	ccstmt := CCommandStmt{eqPos: -1, semiColonPos: -1}
@@ -69,6 +163,16 @@ func ccstmt(opts ...CComandStmtOption) CCommandStmt {
 	}
 
 	return ccstmt
+}
+
+func ccmd(opts ...CCommandOption) *CCommand {
+	cCommand := &CCommand{}
+
+	for _, opt := range opts {
+		opt(cCommand)
+	}
+
+	return cCommand
 }
 
 func csRaw(v string) CComandStmtOption {
@@ -92,5 +196,23 @@ func semiCPos(v int) CComandStmtOption {
 func kind(v CCommandKind) CComandStmtOption {
 	return func(val *CCommandStmt) {
 		val.kind = v
+	}
+}
+
+func pDest(v string) CCommandOption {
+	return func(val *CCommand) {
+		val.dest = v
+	}
+}
+
+func pComp(v string) CCommandOption {
+	return func(val *CCommand) {
+		val.comp = v
+	}
+}
+
+func pJump(v string) CCommandOption {
+	return func(val *CCommand) {
+		val.jump = v
 	}
 }

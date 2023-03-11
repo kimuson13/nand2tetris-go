@@ -85,7 +85,7 @@ func (p *Parser) commandType() (Command, error) {
 		return toLCommand(currentCommand)
 	}
 
-	if isCComand(currentCommand) {
+	if isCCommand(currentCommand) {
 		return toCCommand(currentCommand)
 	}
 
