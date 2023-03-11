@@ -45,7 +45,11 @@ func isCComand(raw string) bool {
 	}
 	semiColonIdx := strings.Index(raw, ";")
 
-	return eqIdx < semiColonIdx
+	if eqCnt == 1 && semiColonCnt == 1 {
+		return eqIdx < semiColonIdx
+	}
+
+	return true
 }
 
 func (c *CCommand) parse() code.Command {
@@ -100,36 +104,36 @@ func genCCommandStmt(raw string) (CCommandStmt, error) {
 func (c *CCommandStmt) toCCommand() (*CCommand, error) {
 	switch c.kind {
 	case DEST_COMP_JUMP:
-		return toDestCompJump(c.raw, c.eqPos, c.semiColonPos)
+		return c.toDestCompJump()
 	case DEST_COMP:
-		return toDestComp(c.raw, c.eqPos)
+		return c.toDestComp()
 	case COMP_JUMP:
-		return toCompJump(c.raw, c.semiColonPos)
+		return c.toCompJump()
 	}
 
 	return nil, ErrCanNotParseCCommand
 }
 
-func toDestCompJump(raw string, eqIdx, semiColonIdx int) (*CCommand, error) {
-	dest := string(raw[0:eqIdx])
-	comp := string(raw[eqIdx:semiColonIdx])
-	jump := string(raw[semiColonIdx:])
+func (c *CCommandStmt) toDestCompJump() (*CCommand, error) {
+	dest := string(c.raw[:c.eqPos])
+	comp := string(c.raw[c.eqPos:c.semiColonPos])
+	jump := string(c.raw[c.semiColonPos:])
 
 	command := &CCommand{dest: dest, comp: comp, jump: jump}
 	return command, nil
 }
 
-func toDestComp(raw string, eqIdx int) (*CCommand, error) {
-	dest := string(raw[0:eqIdx])
-	comp := string(raw[eqIdx:])
+func (c *CCommandStmt) toDestComp() (*CCommand, error) {
+	dest := string(c.raw[:c.eqPos])
+	comp := string(c.raw[c.eqPos:])
 
 	command := &CCommand{dest: dest, comp: comp, jump: ""}
 	return command, nil
 }
 
-func toCompJump(raw string, semiColonIdx int) (*CCommand, error) {
-	comp := string(raw[0:semiColonIdx])
-	jump := string(raw[semiColonIdx:])
+func (c *CCommandStmt) toCompJump() (*CCommand, error) {
+	comp := string(c.raw[:c.semiColonPos])
+	jump := string(c.raw[c.semiColonPos:])
 
 	command := &CCommand{dest: "", comp: comp, jump: jump}
 	return command, nil
