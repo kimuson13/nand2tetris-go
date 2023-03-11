@@ -32,7 +32,7 @@ func TestToACommand(t *testing.T) {
 		raw  string
 		want *ACommand
 	}{
-		"ok_with_no_symbol": {"@123", a(aValue(123), aSymbol("123"))},
+		"ok_with_no_symbol": {"@123", a(aValue(123))},
 	}
 
 	for name, tc := range testCases {

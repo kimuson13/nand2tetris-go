@@ -26,5 +26,5 @@ func toACommand(raw string) (*ACommand, error) {
 		return nil, err
 	}
 
-	return &ACommand{value: i, symbol: val}, nil
+	return &ACommand{value: i, symbol: ""}, nil
 }

@@ -10,8 +10,6 @@ import (
 
 const NEW_LINE = "\r\n"
 
-type commandType string
-
 var (
 	ErrEmptyString       = errors.New("empty string")
 	ErrEqualCountTooMany = errors.New("equal is too many")

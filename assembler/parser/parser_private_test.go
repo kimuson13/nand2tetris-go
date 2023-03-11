@@ -80,6 +80,34 @@ func TestAdvance(t *testing.T) {
 	}
 }
 
+func TestCommandType(t *testing.T) {
+	testCases := map[string]struct {
+		in   []string
+		want Command
+	}{
+		"a_command": {s("@123"), a(aValue(123))},
+		"l_command": {s("(hoge)"), l(lSymbol("hoge"))},
+		"c_command": {s("hoge=huga;piyo"), ccmd(pDest("hoge"), pComp("huga"), pJump("piyo"))},
+	}
+
+	for name, tc := range testCases {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			parser := p(commands(tc.in...))
+			got, err := parser.commandType()
+			if err != nil {
+				t.Error(err)
+			}
+
+			if diff := cmp.Diff(tc.want, got, cmp.AllowUnexported(ACommand{}, LCommand{}, CCommand{})); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
+}
+
 type Option[T any] func(val T)
 
 func p(opts ...Option[*Parser]) Parser {
