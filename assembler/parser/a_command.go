@@ -20,7 +20,7 @@ func isACommand(raw string) bool {
 }
 
 func toACommand(raw string) (*ACommand, error) {
-	val := string(raw[0:])
+	val := string(raw[1:])
 	i, err := strconv.Atoi(val)
 	if err != nil {
 		return nil, err
