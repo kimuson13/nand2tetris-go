@@ -13,7 +13,8 @@ func (l *LCommand) parse() code.Command {
 
 func isLCommand(raw string) bool {
 	head := raw[0]
-	return head == '('
+	tail := raw[len(raw)-1]
+	return head == '(' && tail == ')'
 }
 
 func toLCommand(raw string) (*LCommand, error) {

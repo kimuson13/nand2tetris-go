@@ -11,8 +11,10 @@ func TestIsLCommand(t *testing.T) {
 		raw  string
 		want bool
 	}{
-		"ok": {"(hoge)", true},
-		"ng": {"hoge", false},
+		"ok":            {"(hoge)", true},
+		"ng_no_()":      {"hoge", false},
+		"ng_head_not_(": {"hoge)", false},
+		"ng_tail_not_)": {"(hoge", false},
 	}
 
 	for name, tc := range testCases {
