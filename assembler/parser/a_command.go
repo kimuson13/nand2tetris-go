@@ -11,7 +11,10 @@ type ACommand struct {
 }
 
 func (a *ACommand) parse() code.Command {
-	return nil
+	return &code.ACommand{
+		Value:  a.value,
+		Symbol: a.symbol,
+	}
 }
 
 func isACommand(raw string) bool {

@@ -8,7 +8,10 @@ type LCommand struct {
 }
 
 func (l *LCommand) parse() code.Command {
-	return nil
+	return &code.LCommand{
+		Value:  l.value,
+		Symbol: l.symbol,
+	}
 }
 
 func isLCommand(raw string) bool {
