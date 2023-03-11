@@ -59,6 +59,64 @@ func TestGenCComandStmt(t *testing.T) {
 	}
 }
 
+func TestToCCommand(t *testing.T) {
+	testCases := map[string]struct {
+		in   string
+		want *CCommand
+	}{
+		"dest_comp_jump": {"hoge=huga;piyo", ccmd(pDest("hoge"), pComp("huga"), pJump("piyo"))},
+		"dest_comp":      {"hoge=huga", ccmd(pDest("hoge"), pComp("huga"))},
+		"comp_jump":      {"huga;piyo", ccmd(pComp("huga"), pJump("piyo"))},
+	}
+
+	for name, tc := range testCases {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			got, err := toCCommand(tc.in)
+			if err != nil {
+				t.Error(err)
+			}
+
+			if diff := cmp.Diff(tc.want, got, cmp.AllowUnexported(CCommand{})); diff != "" {
+				t.Errorf("want != got\ndiff=%s", diff)
+			}
+		})
+	}
+}
+
+func TestStmtToCCommand(t *testing.T) {
+	testCases := map[string]struct {
+		in   string
+		want *CCommand
+	}{
+		"dest_comp_jump": {"hoge=huga;piyo", ccmd(pDest("hoge"), pComp("huga"), pJump("piyo"))},
+		"dest_comp":      {"hoge=huga", ccmd(pDest("hoge"), pComp("huga"))},
+		"comp_jump":      {"huga;piyo", ccmd(pComp("huga"), pJump("piyo"))},
+	}
+
+	for name, tc := range testCases {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			stmt, err := genCCommandStmt(tc.in)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			got, err := stmt.toCCommand()
+			if err != nil {
+				t.Error(err)
+			}
+
+			if diff := cmp.Diff(tc.want, got, cmp.AllowUnexported(CCommand{})); diff != "" {
+				t.Errorf("want != got\ndiff=%s", diff)
+			}
+		})
+	}
+}
+
 func TestToDestCompJump(t *testing.T) {
 	testCases := map[string]struct {
 		in   string
