@@ -33,7 +33,7 @@ func genBody(lines []string) []byte {
 	var s string
 	for _, line := range lines {
 		if line != "" {
-			s += fmt.Sprintf("%s\r\n", line)
+			s += fmt.Sprintf("%s\n", line)
 		}
 	}
 

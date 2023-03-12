@@ -9,7 +9,7 @@ import (
 func TestCreateHack(t *testing.T) {
 	path := "./hoge.asm"
 	lines := []string{"hoge", "huga"}
-	want := "hoge\r\nhuga\r\n"
+	want := "hoge\nhuga\n"
 
 	if err := file.CreateHack(path, lines); err != nil {
 		t.Fatal(err)
