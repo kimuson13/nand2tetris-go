@@ -68,16 +68,16 @@ func TestMapCodeComp(t *testing.T) {
 	const wantErr, noErr = true, false
 	testCases := map[string]struct {
 		in      string
-		want    *code.Comp
+		want    code.Comp
 		wantErr bool
 	}{
-		"ok_0":    {"0", ptr(code.COMP_0), noErr},
-		"ok_-A":   {"-A", ptr(code.COMP_MINUS_A), noErr},
-		"ok_!D":   {"!D", ptr(code.COMP_NOT_D), noErr},
-		"ok_A+1":  {"A+1", ptr(code.COMP_A_ADD_1), noErr},
-		"ok_D|A":  {"D|A", ptr(code.COMP_D_OR_A), noErr},
-		"ok_D&M":  {"D&M", ptr(code.COMP_D_AND_M), noErr},
-		"ng_hoge": {"hoge", nil, wantErr},
+		"ok_0":    {"0", code.COMP_0, noErr},
+		"ok_-A":   {"-A", code.COMP_MINUS_A, noErr},
+		"ok_!D":   {"!D", code.COMP_NOT_D, noErr},
+		"ok_A+1":  {"A+1", code.COMP_A_ADD_1, noErr},
+		"ok_D|A":  {"D|A", code.COMP_D_OR_A, noErr},
+		"ok_D&M":  {"D&M", code.COMP_D_AND_M, noErr},
+		"ng_hoge": {"hoge", "", wantErr},
 	}
 
 	for name, tc := range testCases {
@@ -90,8 +90,8 @@ func TestMapCodeComp(t *testing.T) {
 				t.Error(err)
 			}
 
-			if got != nil && *got != *tc.want {
-				t.Errorf("want = %v, but got = %v", *tc.want, *got)
+			if got != tc.want {
+				t.Errorf("want = %v, but got = %v", tc.want, got)
 			}
 		})
 	}

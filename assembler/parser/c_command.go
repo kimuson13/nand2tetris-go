@@ -56,7 +56,26 @@ func isCCommand(raw string) bool {
 }
 
 func (c *CCommand) parse() (code.Command, error) {
-	return nil, nil
+	dest, err := mapCodeDest(c.dest)
+	if err != nil {
+		return nil, err
+	}
+
+	comp, err := mapCodeComp(c.comp)
+	if err != nil {
+		return nil, err
+	}
+
+	jump, err := mapCodeJump(c.jump)
+	if err != nil {
+		return nil, err
+	}
+
+	return &code.CCommand{
+		Dest: dest,
+		Comp: comp,
+		Jump: jump,
+	}, nil
 }
 
 func mapCodeDest(raw string) (*code.Dest, error) {
@@ -82,7 +101,7 @@ func mapCodeDest(raw string) (*code.Dest, error) {
 	return &dest, nil
 }
 
-func mapCodeComp(raw string) (*code.Comp, error) {
+func mapCodeComp(raw string) (code.Comp, error) {
 	mp := map[string]code.Comp{
 		"0":   code.COMP_0,
 		"1":   code.COMP_1,
@@ -111,16 +130,12 @@ func mapCodeComp(raw string) (*code.Comp, error) {
 		"D|M": code.COMP_D_OR_M,
 	}
 
-	if raw == "" {
-		return nil, nil
-	}
-
 	comp, ok := mp[raw]
 	if !ok {
-		return nil, ErrNoSuchComp
+		return "", ErrNoSuchComp
 	}
 
-	return &comp, nil
+	return comp, nil
 }
 
 func mapCodeJump(raw string) (*code.Jump, error) {
