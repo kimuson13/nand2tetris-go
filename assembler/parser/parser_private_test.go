@@ -12,9 +12,11 @@ func TestPrepare(t *testing.T) {
 		fileVal string
 		want    Parser
 	}{
-		"one_line":      {"test", p(commands("test"))},
-		"many_lines":    {"test2\r\nhoge", p(commands("test2", "hoge"))},
-		"include_space": {"test     \r\nhuga", p(commands("test", "huga"))},
+		"one_line":        {"test", p(commands("test"))},
+		"many_lines":      {"test2\r\nhoge", p(commands("test2", "hoge"))},
+		"include_space":   {"test     \r\nhuga", p(commands("test", "huga"))},
+		"include_comment": {"//comment\r\n@123", p(commands("@123"))},
+		"inline_comment":  {"@123 //123\r\n(hoge)", p(commands("@123", "(hoge)"))},
 	}
 
 	for name, tc := range testCases {

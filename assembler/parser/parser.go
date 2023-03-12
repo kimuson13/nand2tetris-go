@@ -15,6 +15,7 @@ var (
 	ErrEqualCountTooMany = errors.New("equal is too many")
 	ErrSemiColonTooMany  = errors.New("semicolon is too many")
 	ErrInvalidCommand    = errors.New("invalid command")
+	ErrTooManyCommentLit = errors.New("too many comment literal")
 )
 
 type Parser struct {
@@ -56,10 +57,41 @@ func prepare(fileName string) (Parser, error) {
 	}
 
 	input := strings.ReplaceAll(string(b), " ", "")
-	commands := strings.Split(input, NEW_LINE)
+	lines := strings.Split(input, NEW_LINE)
+	commands := make([]string, 0, len(lines))
+	for _, line := range lines {
+		command, err := getCommand(line)
+		if err != nil {
+			return p, fmt.Errorf("prepare error: %w", err)
+		}
+
+		if command != "" {
+			commands = append(commands, command)
+		}
+	}
+
 	p = Parser{commands: commands, currentIdx: 0}
 
 	return p, nil
+}
+
+func getCommand(raw string) (string, error) {
+	commentCnt := strings.Count(raw, "//")
+	if commentCnt > 1 {
+		return "", ErrTooManyCommentLit
+	}
+
+	if string(raw[0:2]) == "//" {
+		return "", nil
+	}
+
+	isInlineComment := strings.Contains(raw, "//")
+	if isInlineComment {
+		commentIdx := strings.Index(raw, "//")
+		return string(raw[:commentIdx]), nil
+	}
+
+	return raw, nil
 }
 
 func (p *Parser) hasMoreCommand() bool {
