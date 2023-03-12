@@ -32,7 +32,44 @@ func TestIsCCommand(t *testing.T) {
 }
 
 func TestParse(t *testing.T) {
+	const wantErr, noErr = true, false
+	testCases := map[string]struct {
+		in      CCommand
+		want    *code.CCommand
+		wantErr bool
+	}{
+		"ok_full": {
+			in:      *ccmd(pDest("M"), pComp("0"), pJump("JMP")),
+			want:    codeCmd(cDest(code.DEST_M), cComp(code.COMP_0), cJump(code.JUMP)),
+			wantErr: noErr,
+		},
+		"ok_dest_comp": {
+			in:      *ccmd(pDest("AM"), pComp("1")),
+			want:    codeCmd(cDest(code.DEST_AM), cComp(code.COMP_1)),
+			wantErr: noErr,
+		},
+		"ok_comp_jump": {
+			in:      *ccmd(pComp("A"), pJump("JMP")),
+			want:    codeCmd(cComp(code.COMP_A), cJump(code.JUMP)),
+			wantErr: noErr,
+		},
+	}
 
+	for name, tc := range testCases {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			got, err := tc.in.parse()
+			if err != nil && !tc.wantErr {
+				t.Error(err)
+			}
+
+			if diff := cmp.Diff(tc.want, got, cmp.AllowUnexported(CCommand{})); diff != "" {
+				t.Errorf("diff=%v", diff)
+			}
+		})
+	}
 }
 
 func TestMapCodeDest(t *testing.T) {
@@ -312,6 +349,7 @@ func ptr[T any](val T) *T {
 
 type CComandStmtOption = Option[*CCommandStmt]
 type CCommandOption = Option[*CCommand]
+type CodeCComandOption = Option[*code.CCommand]
 
 func ccstmt(opts ...CComandStmtOption) CCommandStmt {
 	ccstmt := CCommandStmt{eqPos: -1, semiColonPos: -1}
@@ -331,6 +369,38 @@ func ccmd(opts ...CCommandOption) *CCommand {
 	}
 
 	return cCommand
+}
+
+func codeCmd(opts ...CodeCComandOption) *code.CCommand {
+	codeCComand := &code.CCommand{
+		Dest: nil,
+		Comp: "",
+		Jump: nil,
+	}
+
+	for _, opt := range opts {
+		opt(codeCComand)
+	}
+
+	return codeCComand
+}
+
+func cDest(v code.Dest) CodeCComandOption {
+	return func(val *code.CCommand) {
+		val.Dest = &v
+	}
+}
+
+func cComp(v code.Comp) CodeCComandOption {
+	return func(val *code.CCommand) {
+		val.Comp = v
+	}
+}
+
+func cJump(v code.Jump) CodeCComandOption {
+	return func(val *code.CCommand) {
+		val.Jump = &v
+	}
 }
 
 func csRaw(v string) CComandStmtOption {
