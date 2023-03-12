@@ -1,6 +1,7 @@
 package process
 
 import (
+	"assembler/file"
 	"assembler/parser"
 	"errors"
 	"fmt"
@@ -30,5 +31,10 @@ func Run(args []string) error {
 			binaryLines = append(binaryLines, bLine)
 		}
 	}
+
+	if err := file.CreateHack(args[0], binaryLines); err != nil {
+		return fmt.Errorf("process error; %w", err)
+	}
+
 	return nil
 }
