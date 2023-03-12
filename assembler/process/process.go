@@ -15,9 +15,17 @@ func Run(args []string) error {
 		return fmt.Errorf("process error: %w", ErrInvalidArgsLength)
 	}
 
-	_, err := parser.Parse(args[0])
+	commands, err := parser.Parse(args[0])
 	if err != nil {
 		return fmt.Errorf("process error: %w", err)
+	}
+
+	binaryLines := make([]string, 0, len(commands))
+	for _, command := range commands {
+		bLine := command.Convert()
+		if bLine != "" {
+			binaryLines = append(binaryLines, bLine)
+		}
 	}
 	return nil
 }
