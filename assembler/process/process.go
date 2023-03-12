@@ -22,7 +22,10 @@ func Run(args []string) error {
 
 	binaryLines := make([]string, 0, len(commands))
 	for _, command := range commands {
-		bLine := command.Convert()
+		bLine, err := command.Convert()
+		if err != nil {
+			return fmt.Errorf("process error: %w", err)
+		}
 		if bLine != "" {
 			binaryLines = append(binaryLines, bLine)
 		}

@@ -5,7 +5,7 @@ import (
 )
 
 type Command interface {
-	Convert() string
+	Convert() (string, error)
 }
 
 type CCommand struct {
@@ -14,8 +14,23 @@ type CCommand struct {
 	Jump *Jump
 }
 
-func (c *CCommand) Convert() string {
-	return ""
+func (c *CCommand) Convert() (string, error) {
+	dest, err := c.dest()
+	if err != nil {
+		return "", fmt.Errorf("c command convert error: %w", err)
+	}
+
+	comp, err := c.comp()
+	if err != nil {
+		return "", fmt.Errorf("c command convert error: %w", err)
+	}
+
+	jump, err := c.jump()
+	if err != nil {
+		return "", fmt.Errorf("c command convert error: %w", err)
+	}
+
+	return fmt.Sprintf("111%s%s%s", comp, dest, jump), nil
 }
 
 func (c *CCommand) dest() (string, error) {
@@ -58,8 +73,8 @@ type ACommand struct {
 	Symbol string
 }
 
-func (a *ACommand) Convert() string {
-	return fmt.Sprintf("0%015b", a.Value)
+func (a *ACommand) Convert() (string, error) {
+	return fmt.Sprintf("0%015b", a.Value), nil
 }
 
 type LCommand struct {
@@ -67,6 +82,6 @@ type LCommand struct {
 	Symbol string
 }
 
-func (l *LCommand) Convert() string {
-	return ""
+func (l *LCommand) Convert() (string, error) {
+	return "", nil
 }

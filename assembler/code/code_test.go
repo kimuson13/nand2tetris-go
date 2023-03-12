@@ -23,7 +23,12 @@ func TestACommand_Convert(t *testing.T) {
 				Value:  tc.value,
 			}
 
-			if got := aCommand.Convert(); got != tc.want {
+			got, err := aCommand.Convert()
+			if err != nil {
+				t.Error(err)
+			}
+
+			if got != tc.want {
 				t.Errorf("want:\n%v\ngot:\n%v", tc.want, got)
 			}
 		})
