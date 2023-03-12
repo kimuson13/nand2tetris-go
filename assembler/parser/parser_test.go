@@ -14,7 +14,7 @@ func TestParse(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	in := "@123\r\n(HOGE)\r\nM=M+1;JMP"
+	in := "//hogehoge\r\n@123 //hoge\r\n(HOGE)\r\nM=M+1;JMP"
 	want := []code.Command{
 		&code.ACommand{Value: 123},
 		&code.LCommand{Symbol: "HOGE"},
