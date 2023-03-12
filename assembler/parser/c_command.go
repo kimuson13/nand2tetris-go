@@ -55,8 +55,8 @@ func isCCommand(raw string) bool {
 	return true
 }
 
-func (c *CCommand) parse() code.Command {
-	return nil
+func (c *CCommand) parse() (code.Command, error) {
+	return nil, nil
 }
 
 func mapCodeDest(raw string) (*code.Dest, error) {

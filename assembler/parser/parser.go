@@ -36,7 +36,10 @@ func Parse(fileName string) ([]code.Command, error) {
 			return results, fmt.Errorf("parse error: %w", err)
 		}
 
-		res := command.parse()
+		res, err := command.parse()
+		if err != nil {
+			return results, fmt.Errorf("parse error: %w", err)
+		}
 		results = append(results, res)
 
 		parser.advance()

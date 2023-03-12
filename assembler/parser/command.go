@@ -5,5 +5,5 @@ import (
 )
 
 type Command interface {
-	parse() code.Command
+	parse() (code.Command, error)
 }

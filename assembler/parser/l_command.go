@@ -7,11 +7,11 @@ type LCommand struct {
 	symbol string
 }
 
-func (l *LCommand) parse() code.Command {
+func (l *LCommand) parse() (code.Command, error) {
 	return &code.LCommand{
 		Value:  l.value,
 		Symbol: l.symbol,
-	}
+	}, nil
 }
 
 func isLCommand(raw string) bool {
