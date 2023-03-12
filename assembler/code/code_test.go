@@ -5,6 +5,10 @@ import (
 	"testing"
 )
 
+func TestCCommand_Convert(t *testing.T) {
+
+}
+
 func TestACommand_Convert(t *testing.T) {
 	testCases := map[string]struct {
 		symbol string
@@ -33,4 +37,8 @@ func TestACommand_Convert(t *testing.T) {
 			}
 		})
 	}
+}
+
+func ptr[T any](val T) *T {
+	return &val
 }
