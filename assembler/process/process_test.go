@@ -34,7 +34,7 @@ func TestRun(t *testing.T) {
 
 			got := getBody(t, genHackPath)
 			if diff := cmp.Diff(tc.want, got); diff != "" {
-				t.Error(diff)
+				t.Errorf("want:\n%s\ngot:\n%s\ndiff:\n%s", tc.want, got, diff)
 			}
 
 			if err := os.Remove(genHackPath); err != nil {
