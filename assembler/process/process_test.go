@@ -3,50 +3,44 @@ package process_test
 import (
 	"assembler/process"
 	"os"
+	"path/filepath"
+	"strings"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestRun(t *testing.T) {
-	tearDown := setUp(t)
-	defer tearDown()
-	in := []string{"test.asm"}
-	want := getBody(t, "./test.hack")
-
-	if err := process.Run(in); err != nil {
-		t.Error(err)
+	testCases := map[string]struct {
+		asmPath string
+		want    string
+	}{
+		"MaxL":  {"../tests/asm/MaxL.asm", getBody(t, "../tests/hack/MaxL.hack")},
+		"PongL": {"../tests/asm/PongL.asm", getBody(t, "../tests/hack/PongL.hack")},
+		"RectL": {"../tests/asm/RectL.asm", getBody(t, "../tests/hack/RectL.hack")},
 	}
 
-	b, err := os.ReadFile("./test.hack")
-	if err != nil {
-		t.Error(err)
-	}
+	for name, tc := range testCases {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			dir, fileName := filepath.Split(tc.asmPath)
+			ext := filepath.Ext(tc.asmPath)
+			genHackPath := filepath.Join(dir, strings.ReplaceAll(fileName, ext, ".hack"))
 
-	if got := string(b); got != want {
-		t.Errorf("want = %v, but got = %v", want, got)
-	}
-	if err := os.Remove("./test.hack"); err != nil {
-		t.Error(err)
-	}
-}
+			if err := process.Run([]string{tc.asmPath}); err != nil {
+				t.Fatal(err)
+			}
 
-func setUp(t *testing.T) func() {
-	t.Helper()
+			got := getBody(t, genHackPath)
+			if diff := cmp.Diff(tc.want, got); diff != "" {
+				t.Error(diff)
+			}
 
-	f, err := os.Create("test.asm")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer f.Close()
-
-	s := "//comment\r\n@100\r\n(HOGE)\r\nD=M;JMP //comment2"
-	if _, err := f.Write([]byte(s)); err != nil {
-		t.Fatal(err)
-	}
-
-	return func() {
-		if err := os.Remove(f.Name()); err != nil {
-			t.Error(err)
-		}
+			if err := os.Remove(genHackPath); err != nil {
+				t.Error(err)
+			}
+		})
 	}
 }
 

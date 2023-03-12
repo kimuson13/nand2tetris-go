@@ -53,6 +53,7 @@ func TestGetCommand(t *testing.T) {
 		"ok_a_command":        {"@123", "@123", noErr},
 		"ok_a_command_tab":    {"	@123", "@123", noErr},
 		"ok_skip_comment":     {"//comment", "", noErr},
+		"ok_empty":            {"", "", noErr},
 		"ng_between_space":    {"@12 3", "", wantErr},
 		"ng_too_many_comment": {"@123 // hoge //huga", "", wantErr},
 	}
