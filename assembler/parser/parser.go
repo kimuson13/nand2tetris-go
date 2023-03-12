@@ -77,6 +77,9 @@ func prepare(fileName string) (Parser, error) {
 
 func getCommand(raw string) (string, error) {
 	line := strings.TrimSpace(raw)
+	if line == "" {
+		return "", nil
+	}
 
 	commentCnt := strings.Count(line, "//")
 	if commentCnt > 1 {
