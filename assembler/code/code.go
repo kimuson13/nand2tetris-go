@@ -1,5 +1,7 @@
 package code
 
+import "fmt"
+
 type Command interface {
 	Convert() string
 }
@@ -20,7 +22,7 @@ type ACommand struct {
 }
 
 func (a *ACommand) Convert() string {
-	return ""
+	return fmt.Sprintf("0%015b", a.Value)
 }
 
 type LCommand struct {
