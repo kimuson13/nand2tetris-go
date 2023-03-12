@@ -43,6 +43,36 @@ func TestPrepare(t *testing.T) {
 	}
 }
 
+func TestGetCommand(t *testing.T) {
+	const wantErr, noErr = true, false
+	testCases := map[string]struct {
+		in      string
+		want    string
+		wantErr bool
+	}{
+		"ok_a_command":        {"@123", "@123", noErr},
+		"ok_a_command_tab":    {"	@123", "@123", noErr},
+		"ok_skip_comment":     {"//comment", "", noErr},
+		"ng_between_space":    {"@12 3", "", wantErr},
+		"ng_too_many_comment": {"@123 // hoge //huga", "", wantErr},
+	}
+
+	for name, tc := range testCases {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			got, err := getCommand(tc.in)
+			if err != nil && !tc.wantErr {
+				t.Error(err)
+			}
+
+			if got != tc.want {
+				t.Errorf("want = %s, but got = %s", tc.want, got)
+			}
+		})
+	}
+}
+
 func TestHasMoreCommand(t *testing.T) {
 	testCases := map[string]struct {
 		commands   []string

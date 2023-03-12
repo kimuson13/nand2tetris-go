@@ -15,6 +15,7 @@ var (
 	ErrEqualCountTooMany = errors.New("equal is too many")
 	ErrSemiColonTooMany  = errors.New("semicolon is too many")
 	ErrInvalidCommand    = errors.New("invalid command")
+	ErrInvalidSyntax     = errors.New("invalid syntax")
 	ErrTooManyCommentLit = errors.New("too many comment literal")
 )
 
@@ -56,8 +57,7 @@ func prepare(fileName string) (Parser, error) {
 		return p, fmt.Errorf("prepare error: %w", err)
 	}
 
-	input := strings.ReplaceAll(string(b), " ", "")
-	lines := strings.Split(input, NEW_LINE)
+	lines := strings.Split(string(b), NEW_LINE)
 	commands := make([]string, 0, len(lines))
 	for _, line := range lines {
 		command, err := getCommand(line)
@@ -76,22 +76,28 @@ func prepare(fileName string) (Parser, error) {
 }
 
 func getCommand(raw string) (string, error) {
-	commentCnt := strings.Count(raw, "//")
+	line := strings.TrimSpace(raw)
+
+	commentCnt := strings.Count(line, "//")
 	if commentCnt > 1 {
 		return "", ErrTooManyCommentLit
 	}
 
-	if string(raw[0:2]) == "//" {
+	if string(line[0:2]) == "//" {
 		return "", nil
 	}
 
-	isInlineComment := strings.Contains(raw, "//")
+	isInlineComment := strings.Contains(line, "//")
 	if isInlineComment {
-		commentIdx := strings.Index(raw, "//")
-		return string(raw[:commentIdx]), nil
+		commentIdx := strings.Index(line, "//")
+		line = strings.TrimSpace(string(line[:commentIdx]))
+	}
+	isIncludeSpaceOrTab := strings.Contains(line, " ") || strings.Contains(line, "\t")
+	if isIncludeSpaceOrTab {
+		return "", ErrInvalidSyntax
 	}
 
-	return raw, nil
+	return line, nil
 }
 
 func (p *Parser) hasMoreCommand() bool {
