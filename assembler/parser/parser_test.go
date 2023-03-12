@@ -14,7 +14,7 @@ func TestParse(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	in := "//hogehoge\r\n@123 //hoge\r\n(HOGE)\r\nM=M+1;JMP"
+	in := "//hogehoge\r\n@123 //hoge\r\n(HOGE)\r\nM=M+1;JMP\r\nD=D-M"
 	want := []code.Command{
 		&code.ACommand{Value: 123},
 		&code.LCommand{Symbol: "HOGE"},
@@ -22,6 +22,10 @@ func TestParse(t *testing.T) {
 			Dest: ptr(code.DEST_M),
 			Comp: code.COMP_M_ADD_1,
 			Jump: ptr(code.JUMP)},
+		&code.CCommand{
+			Dest: ptr(code.DEST_D),
+			Comp: code.COMP_D_MINUS_M,
+		},
 	}
 	f.Write([]byte(in))
 	got, err := parser.Parse(f.Name())

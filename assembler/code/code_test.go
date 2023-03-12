@@ -16,6 +16,7 @@ func TestCCommand_Convert(t *testing.T) {
 	}{
 		"D=M":      {ptr(code.DEST_D), code.COMP_M, nil, "1111110000010000", noErr},
 		"D=D-A":    {ptr(code.DEST_D), code.COMP_D_MINUS_A, nil, "1110010011010000", noErr},
+		"D=D-M":    {ptr(code.DEST_D), code.COMP_D_MINUS_M, nil, "1111010011010000", noErr},
 		"D=M;JMP":  {ptr(code.DEST_D), code.COMP_M, ptr(code.JUMP), "1111110000010111", noErr},
 		"D;JGT":    {nil, code.COMP_D, ptr(code.JUMP_GREATER_THAN), "1110001100000001", noErr},
 		"hoge=M+1": {ptr(code.Dest("hoge")), code.COMP_M_ADD_1, nil, "", wantErr},

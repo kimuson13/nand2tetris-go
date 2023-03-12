@@ -113,6 +113,7 @@ func TestMapCodeComp(t *testing.T) {
 		"ok_!D":   {"!D", code.COMP_NOT_D, noErr},
 		"ok_A+1":  {"A+1", code.COMP_A_ADD_1, noErr},
 		"ok_D|A":  {"D|A", code.COMP_D_OR_A, noErr},
+		"ok_D-M":  {"D-M", code.COMP_D_MINUS_M, noErr},
 		"ok_D&M":  {"D&M", code.COMP_D_AND_M, noErr},
 		"ng_hoge": {"hoge", "", wantErr},
 	}

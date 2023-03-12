@@ -127,7 +127,7 @@ func mapCodeComp(raw string) (code.Comp, error) {
 		"M+1": code.COMP_M_ADD_1,
 		"M-1": code.COMP_M_MINUS_1,
 		"D+M": code.COMP_D_ADD_M,
-		"D-M": code.COMP_D_MINUS_A,
+		"D-M": code.COMP_D_MINUS_M,
 		"M-D": code.COMP_M_MINUS_D,
 		"D&M": code.COMP_D_AND_M,
 		"D|M": code.COMP_D_OR_M,
