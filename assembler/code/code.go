@@ -1,6 +1,9 @@
 package code
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 type Command interface {
 	Convert() string
@@ -12,8 +15,127 @@ type CCommand struct {
 	Jump *Jump
 }
 
+var (
+	ErrNoSuchDest = errors.New("no such dest binary")
+	ErrNoSuchComp = errors.New("no such comp binary")
+	ErrNoSuchJump = errors.New("no such jump binary")
+)
+
 func (c *CCommand) Convert() string {
 	return ""
+}
+
+func (c *CCommand) dest() (string, error) {
+	if c.Dest == nil {
+		return "000", nil
+	}
+
+	b, err := mapDestToBinary(*c.Dest)
+	if err != nil {
+		return "", fmt.Errorf("convert dest error: %w", err)
+	}
+
+	return b, nil
+}
+
+func (c *CCommand) comp() (string, error) {
+	b, err := mapCompToBinary(c.Comp)
+	if err != nil {
+		return "", fmt.Errorf("convert comp error: %w", err)
+	}
+
+	return b, nil
+}
+
+func (c *CCommand) jump() (string, error) {
+	if c.Jump == nil {
+		return "000", nil
+	}
+
+	b, err := mapJumpToBinary(*c.Jump)
+	if err != nil {
+		return "", fmt.Errorf("convert jump error: %w", err)
+	}
+
+	return b, nil
+}
+
+func mapDestToBinary(dest Dest) (string, error) {
+	mp := map[Dest]string{
+		DEST_M:   "001",
+		DEST_D:   "010",
+		DEST_MD:  "011",
+		DEST_A:   "100",
+		DEST_AM:  "101",
+		DEST_AD:  "110",
+		DEST_AMD: "111",
+	}
+
+	b, ok := mp[dest]
+	if !ok {
+		return "", ErrNoSuchDest
+	}
+
+	return b, nil
+}
+
+func mapCompToBinary(comp Comp) (string, error) {
+	mp := map[Comp]string{
+		COMP_0:         "0101010",
+		COMP_1:         "0111111",
+		COMP_MINUS_1:   "0111010",
+		COMP_D:         "0001100",
+		COMP_A:         "0110000",
+		COMP_NOT_D:     "0001101",
+		COMP_NOT_A:     "0110001",
+		COMP_MINUS_D:   "0001111",
+		COMP_MINUS_A:   "0110011",
+		COMP_D_ADD_1:   "0011111",
+		COMP_A_ADD_1:   "0110111",
+		COMP_D_MINUS_1: "0001110",
+		COMP_A_MINUS_1: "0110010",
+		COMP_D_ADD_A:   "0000010",
+		COMP_D_MINUS_A: "0010011",
+		COMP_A_MINUS_D: "0000111",
+		COMP_D_AND_A:   "0000000",
+		COMP_D_OR_A:    "0010101",
+		COMP_M:         "1110000",
+		COMP_NOT_M:     "1110001",
+		COMP_MINUS_M:   "1110011",
+		COMP_M_ADD_1:   "1110111",
+		COMP_M_MINUS_1: "1110010",
+		COMP_D_ADD_M:   "1000010",
+		COMP_D_MINUS_M: "1010011",
+		COMP_M_MINUS_D: "1000111",
+		COMP_D_AND_M:   "1000000",
+		COMP_D_OR_M:    "1010101",
+	}
+
+	b, ok := mp[comp]
+	if !ok {
+		return "", ErrNoSuchComp
+	}
+
+	return b, nil
+}
+
+func mapJumpToBinary(jump Jump) (string, error) {
+	mp := map[Jump]string{
+		JUMP_GREATER_THAN:  "001",
+		JUMP_EQUAL:         "010",
+		JUMP_GREATER_EQUAL: "011",
+		JUMP_LOWER_THAN:    "100",
+		JUMP_NOT_EQUAL:     "101",
+		JUMP_LOWER_EQUAL:   "110",
+		JUMP:               "111",
+	}
+
+	b, ok := mp[jump]
+	if !ok {
+		return "", ErrNoSuchJump
+	}
+
+	return b, nil
 }
 
 type ACommand struct {
@@ -68,10 +190,13 @@ const (
 	COMP_D_AND_A   Comp = "D&A"
 	COMP_D_OR_A    Comp = "D|A"
 	COMP_M         Comp = "M"
+	COMP_MINUS_M   Comp = "-M"
 	COMP_NOT_M     Comp = "!M"
 	COMP_M_ADD_1   Comp = "M+1"
+	COMP_M_MINUS_1 Comp = "M-1"
 	COMP_D_ADD_M   Comp = "D+M"
 	COMP_D_MINUS_M Comp = "D-M"
+	COMP_M_MINUS_D Comp = "M-D"
 	COMP_D_AND_M   Comp = "D&M"
 	COMP_D_OR_M    Comp = "D|M"
 )
