@@ -6,14 +6,14 @@ import (
 )
 
 type ACommand struct {
-	value  int
-	symbol string
+	address int
+	symbol  string
 }
 
 func (a *ACommand) parse() (code.Command, error) {
 	return &code.ACommand{
-		Value:  a.value,
-		Symbol: a.symbol,
+		Address: a.address,
+		Symbol:  a.symbol,
 	}, nil
 }
 
@@ -29,5 +29,5 @@ func toACommand(raw string) (*ACommand, error) {
 		return nil, err
 	}
 
-	return &ACommand{value: i, symbol: ""}, nil
+	return &ACommand{address: i, symbol: ""}, nil
 }

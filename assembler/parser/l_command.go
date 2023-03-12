@@ -3,13 +3,11 @@ package parser
 import "assembler/code"
 
 type LCommand struct {
-	value  int
 	symbol string
 }
 
 func (l *LCommand) parse() (code.Command, error) {
 	return &code.LCommand{
-		Value:  l.value,
 		Symbol: l.symbol,
 	}, nil
 }
@@ -23,5 +21,5 @@ func isLCommand(raw string) bool {
 func toLCommand(raw string) (*LCommand, error) {
 	val := string(raw[1 : len(raw)-1])
 
-	return &LCommand{value: 0, symbol: val}, nil
+	return &LCommand{symbol: val}, nil
 }

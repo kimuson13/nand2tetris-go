@@ -32,7 +32,7 @@ func TestToACommand(t *testing.T) {
 		raw  string
 		want *ACommand
 	}{
-		"ok_with_no_symbol": {"@123", a(aValue(123))},
+		"ok_with_no_symbol": {"@123", a(aAddress(123))},
 	}
 
 	for name, tc := range testCases {
@@ -55,8 +55,8 @@ type ACommandOption func(val *ACommand)
 
 func a(opts ...ACommandOption) *ACommand {
 	aCommand := &ACommand{
-		value:  0,
-		symbol: "",
+		address: 0,
+		symbol:  "",
 	}
 
 	for _, opt := range opts {
@@ -66,9 +66,9 @@ func a(opts ...ACommandOption) *ACommand {
 	return aCommand
 }
 
-func aValue(v int) ACommandOption {
+func aAddress(v int) ACommandOption {
 	return func(val *ACommand) {
-		val.value = v
+		val.address = v
 	}
 }
 

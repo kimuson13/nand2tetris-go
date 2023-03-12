@@ -16,7 +16,7 @@ func TestParse(t *testing.T) {
 	}
 	in := "//hogehoge\r\n@123 //hoge\r\n(HOGE)\r\nM=M+1;JMP\r\nD=D-M"
 	want := []code.Command{
-		&code.ACommand{Value: 123},
+		&code.ACommand{Address: 123},
 		&code.LCommand{Symbol: "HOGE"},
 		&code.CCommand{
 			Dest: ptr(code.DEST_M),

@@ -118,7 +118,7 @@ func TestCommandType(t *testing.T) {
 		in   []string
 		want Command
 	}{
-		"a_command": {s("@123"), a(aValue(123))},
+		"a_command": {s("@123"), a(aAddress(123))},
 		"l_command": {s("(hoge)"), l(lSymbol("hoge"))},
 		"c_command": {s("hoge=huga;piyo"), ccmd(pDest("hoge"), pComp("huga"), pJump("piyo"))},
 	}

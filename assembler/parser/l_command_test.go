@@ -33,7 +33,7 @@ func TestToLCommand(t *testing.T) {
 		raw  string
 		want *LCommand
 	}{
-		"ok": {"(hoge)", l(lValue(0), lSymbol("hoge"))},
+		"ok": {"(hoge)", l(lSymbol("hoge"))},
 	}
 
 	for name, tc := range testCases {
@@ -56,7 +56,6 @@ type LCommandOption Option[*LCommand]
 
 func l(opts ...LCommandOption) *LCommand {
 	lCommand := &LCommand{
-		value:  0,
 		symbol: "",
 	}
 
@@ -65,12 +64,6 @@ func l(opts ...LCommandOption) *LCommand {
 	}
 
 	return lCommand
-}
-
-func lValue(v int) LCommandOption {
-	return func(val *LCommand) {
-		val.value = v
-	}
 }
 
 func lSymbol(v string) LCommandOption {
