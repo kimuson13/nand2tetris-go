@@ -10,7 +10,7 @@ func TestRun(t *testing.T) {
 	tearDown := setUp(t)
 	defer tearDown()
 	in := []string{"test.asm"}
-	want := "0000000001100100\r\n1111110000010111\r\n"
+	want := getBody(t, "./test.hack")
 
 	if err := process.Run(in); err != nil {
 		t.Error(err)
@@ -48,4 +48,15 @@ func setUp(t *testing.T) func() {
 			t.Error(err)
 		}
 	}
+}
+
+func getBody(t *testing.T, path string) string {
+	t.Helper()
+
+	b, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	return string(b)
 }
