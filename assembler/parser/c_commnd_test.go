@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"assembler/code"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -25,6 +26,101 @@ func TestIsCCommand(t *testing.T) {
 			t.Parallel()
 			if got := isCCommand(tc.raw); got != tc.want {
 				t.Errorf("want = %v, but got = %v", tc.want, got)
+			}
+		})
+	}
+}
+
+func TestParse(t *testing.T) {
+
+}
+
+func TestMapCodeDest(t *testing.T) {
+	const wantErr, noErr = true, false
+	testCases := map[string]struct {
+		in      string
+		want    *code.Dest
+		wantErr bool
+	}{
+		"ok_M":    {"M", ptr(code.DEST_M), noErr},
+		"ok_AMD":  {"AMD", ptr(code.DEST_AMD), noErr},
+		"ng_hoge": {"hoge", nil, wantErr},
+	}
+
+	for name, tc := range testCases {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			got, err := mapCodeDest(tc.in)
+			if err != nil && !tc.wantErr {
+				t.Error(err)
+			}
+
+			if got != nil && *got != *tc.want {
+				t.Errorf("want = %v, but got = %v", *tc.want, *got)
+			}
+		})
+	}
+}
+
+func TestMapCodeComp(t *testing.T) {
+	const wantErr, noErr = true, false
+	testCases := map[string]struct {
+		in      string
+		want    *code.Comp
+		wantErr bool
+	}{
+		"ok_0":    {"0", ptr(code.COMP_0), noErr},
+		"ok_-A":   {"-A", ptr(code.COMP_MINUS_A), noErr},
+		"ok_!D":   {"!D", ptr(code.COMP_NOT_D), noErr},
+		"ok_A+1":  {"A+1", ptr(code.COMP_A_ADD_1), noErr},
+		"ok_D|A":  {"D|A", ptr(code.COMP_D_OR_A), noErr},
+		"ok_D&M":  {"D&M", ptr(code.COMP_D_AND_M), noErr},
+		"ng_hoge": {"hoge", nil, wantErr},
+	}
+
+	for name, tc := range testCases {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			got, err := mapCodeComp(tc.in)
+			if err != nil && !tc.wantErr {
+				t.Error(err)
+			}
+
+			if got != nil && *got != *tc.want {
+				t.Errorf("want = %v, but got = %v", *tc.want, *got)
+			}
+		})
+	}
+}
+
+func TestMapCodeJump(t *testing.T) {
+	const wantErr, noErr = true, false
+	testCases := map[string]struct {
+		in      string
+		want    *code.Jump
+		wantErr bool
+	}{
+		"ok_JGT":  {"JGT", ptr(code.JUMP_GREATER_THAN), noErr},
+		"ok_JMP":  {"JMP", ptr(code.JUMP), noErr},
+		"ng_hoge": {"hoge", nil, wantErr},
+	}
+
+	for name, tc := range testCases {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			got, err := mapCodeJump(tc.in)
+			if err != nil && !tc.wantErr {
+				t.Error(err)
+			}
+
+			if got != nil && *got != *tc.want {
+				t.Errorf("want = %v, but got = %v", *tc.want, *got)
 			}
 		})
 	}
@@ -208,6 +304,10 @@ func TestToCompJump(t *testing.T) {
 			}
 		})
 	}
+}
+
+func ptr[T any](val T) *T {
+	return &val
 }
 
 type CComandStmtOption = Option[*CCommandStmt]
