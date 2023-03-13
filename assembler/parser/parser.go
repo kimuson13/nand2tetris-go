@@ -2,6 +2,7 @@ package parser
 
 import (
 	"assembler/code"
+	"assembler/symtable"
 	"errors"
 	"fmt"
 	"os"
@@ -20,8 +21,9 @@ var (
 )
 
 type Parser struct {
-	commands   []string // アセンブリファイルを改行ごとにする
-	currentIdx int      // 現在の実行行数
+	commands    []string // アセンブリファイルを改行ごとにする
+	currentIdx  int      // 現在の実行行数
+	symbolTable symtable.SymTable
 }
 
 func New(path string) (Parser, error) {
@@ -84,6 +86,10 @@ func getCommand(raw string) (string, error) {
 	}
 
 	return line, nil
+}
+
+func (p *Parser) SynbolicLink() error {
+	return nil
 }
 
 func (p *Parser) Parse() ([]code.Command, error) {

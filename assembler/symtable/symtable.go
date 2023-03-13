@@ -39,8 +39,8 @@ var (
 	ErrNoSuchAKey        = errors.New("no such a key")
 )
 
-func New() *SymTable {
-	return &SymTable{
+func New() SymTable {
+	return SymTable{
 		mp: genDefinedSymbol(),
 	}
 }
