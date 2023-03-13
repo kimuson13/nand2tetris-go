@@ -1,47 +1,10 @@
 package parser
 
 import (
-	"os"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 )
-
-func TestPrepare(t *testing.T) {
-	testCases := map[string]struct {
-		fileVal string
-		want    Parser
-	}{
-		"one_line":        {"test", p(commands("test"))},
-		"many_lines":      {"test2\r\nhoge", p(commands("test2", "hoge"))},
-		"include_space":   {"test     \r\nhuga", p(commands("test", "huga"))},
-		"include_comment": {"//comment\r\n@123", p(commands("@123"))},
-		"inline_comment":  {"@123 //123\r\n(hoge)", p(commands("@123", "(hoge)"))},
-	}
-
-	for name, tc := range testCases {
-		tc := tc
-		t.Run(name, func(t *testing.T) {
-			t.Parallel()
-			f, err := os.CreateTemp("./", "")
-			if err != nil {
-				t.Fatal(err)
-			}
-			f.Write([]byte(tc.fileVal))
-
-			got, err := prepare(f.Name())
-			if err != nil {
-				t.Error(err)
-			}
-
-			if diff := cmp.Diff(got, tc.want, cmp.AllowUnexported(Parser{})); diff != "" {
-				t.Errorf("want = %#v, got = %#v, \ndiff: %s", tc.want, got, diff)
-			}
-
-			os.Remove(f.Name())
-		})
-	}
-}
 
 func TestGetCommand(t *testing.T) {
 	const wantErr, noErr = true, false

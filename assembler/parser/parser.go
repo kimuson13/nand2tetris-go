@@ -70,57 +70,6 @@ func (p *Parser) Parse() ([]code.Command, error) {
 	return results, nil
 }
 
-func Parse(fileName string) ([]code.Command, error) {
-	parser, err := prepare(fileName)
-	results := make([]code.Command, 0, len(parser.commands))
-
-	if err != nil {
-		return results, fmt.Errorf("parse error: %w", err)
-	}
-
-	for parser.hasMoreCommand() {
-		command, err := parser.commandType()
-		if err != nil {
-			return results, fmt.Errorf("parse error: %w", err)
-		}
-
-		res, err := command.parse()
-		if err != nil {
-			return results, fmt.Errorf("parse error: %w", err)
-		}
-		results = append(results, res)
-
-		parser.advance()
-	}
-
-	return results, nil
-}
-
-func prepare(fileName string) (Parser, error) {
-	b, err := os.ReadFile(fileName)
-	var p Parser
-	if err != nil {
-		return p, fmt.Errorf("prepare error: %w", err)
-	}
-
-	lines := strings.Split(string(b), NEW_LINE)
-	commands := make([]string, 0, len(lines))
-	for _, line := range lines {
-		command, err := getCommand(line)
-		if err != nil {
-			return p, fmt.Errorf("prepare error: %w", err)
-		}
-
-		if command != "" {
-			commands = append(commands, command)
-		}
-	}
-
-	p = Parser{commands: commands, currentIdx: 0}
-
-	return p, nil
-}
-
 func getCommand(raw string) (string, error) {
 	line := strings.TrimSpace(raw)
 	if line == "" {
