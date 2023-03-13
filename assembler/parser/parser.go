@@ -89,7 +89,7 @@ func getCommand(raw string) (string, error) {
 	return line, nil
 }
 
-func (p *Parser) SynbolicLink() error {
+func (p *Parser) SymbolicLink() error {
 	symTable := symtable.New()
 	p.symbolTable = symTable
 
