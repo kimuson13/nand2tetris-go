@@ -6,6 +6,21 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
+func TestGetCommands(t *testing.T) {
+	t.Parallel()
+	in := s("@123", "// comment", "(hoge) // hello", "", "M=M+1;JMP")
+	want := s("@123", "(hoge)", "M=M+1;JMP")
+
+	got, err := getCommands(in)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("want:\n%v\ngot:\n%v\ndiff:\n%s", want, got, diff)
+	}
+}
+
 func TestGetCommand(t *testing.T) {
 	const wantErr, noErr = true, false
 	testCases := map[string]struct {
