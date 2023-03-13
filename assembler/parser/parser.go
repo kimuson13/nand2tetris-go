@@ -32,16 +32,9 @@ func New(path string) (Parser, error) {
 	}
 
 	lines := strings.Split(string(b), NEW_LINE)
-	commands := make([]string, 0, len(lines))
-	for _, line := range lines {
-		command, err := getCommand(line)
-		if err != nil {
-			return p, fmt.Errorf("prepare error: %w", err)
-		}
-
-		if command != "" {
-			commands = append(commands, command)
-		}
+	commands, err := getCommands(lines)
+	if err != nil {
+		return p, fmt.Errorf("prepare error: %w", err)
 	}
 
 	p = Parser{commands: commands, currentIdx: 0}
@@ -49,25 +42,20 @@ func New(path string) (Parser, error) {
 	return p, nil
 }
 
-func (p *Parser) Parse() ([]code.Command, error) {
-	results := make([]code.Command, 0, len(p.commands))
-
-	for p.hasMoreCommand() {
-		command, err := p.commandType()
+func getCommands(lines []string) ([]string, error) {
+	commands := make([]string, 0, len(lines))
+	for _, line := range lines {
+		command, err := getCommand(line)
 		if err != nil {
-			return results, fmt.Errorf("parse error: %w", err)
+			return commands, fmt.Errorf("prepare error: %w", err)
 		}
 
-		res, err := command.parse()
-		if err != nil {
-			return results, fmt.Errorf("parse error: %w", err)
+		if command != "" {
+			commands = append(commands, command)
 		}
-		results = append(results, res)
-
-		p.advance()
 	}
 
-	return results, nil
+	return commands, nil
 }
 
 func getCommand(raw string) (string, error) {
@@ -96,6 +84,27 @@ func getCommand(raw string) (string, error) {
 	}
 
 	return line, nil
+}
+
+func (p *Parser) Parse() ([]code.Command, error) {
+	results := make([]code.Command, 0, len(p.commands))
+
+	for p.hasMoreCommand() {
+		command, err := p.commandType()
+		if err != nil {
+			return results, fmt.Errorf("parse error: %w", err)
+		}
+
+		res, err := command.parse()
+		if err != nil {
+			return results, fmt.Errorf("parse error: %w", err)
+		}
+		results = append(results, res)
+
+		p.advance()
+	}
+
+	return results, nil
 }
 
 func (p *Parser) hasMoreCommand() bool {
