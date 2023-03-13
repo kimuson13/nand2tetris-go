@@ -174,7 +174,7 @@ func (p *Parser) commandType() (Command, error) {
 	}
 
 	if isLCommand(currentCommand) {
-		command, err := toLCommand(currentCommand)
+		command, err := p.toLCommand(currentCommand)
 		if err != nil {
 			return nil, fmt.Errorf("commandType error: %w", err)
 		}
@@ -182,7 +182,7 @@ func (p *Parser) commandType() (Command, error) {
 	}
 
 	if isCCommand(currentCommand) {
-		command, err := toCCommand(currentCommand)
+		command, err := p.toCCommand(currentCommand)
 		if err != nil {
 			return nil, fmt.Errorf("commandType error: %w", err)
 		}
@@ -211,6 +211,28 @@ func (p *Parser) toACommand(raw string) (*aCommand, error) {
 	}
 
 	return nil, fmt.Errorf("toAComamnd error: %w: %s", ErrInvalidSyntax, val)
+}
+
+func (p *Parser) toLCommand(raw string) (*lCommand, error) {
+	val := string(raw[1 : len(raw)-1])
+
+	return &lCommand{symbol: val}, nil
+}
+
+func (p *Parser) toCCommand(raw string) (*cCommand, error) {
+	const TO_CCOMMAND_ERR = "toCCommand error: %w"
+
+	stmt, err := genCCommandStmt(raw)
+	if err != nil {
+		return nil, fmt.Errorf(TO_CCOMMAND_ERR, err)
+	}
+
+	cCommad, err := stmt.toCCommand()
+	if err != nil {
+		return nil, fmt.Errorf(TO_CCOMMAND_ERR, err)
+	}
+
+	return cCommad, nil
 }
 
 func isNumeric(val string) bool {

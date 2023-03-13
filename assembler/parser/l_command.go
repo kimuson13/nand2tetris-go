@@ -17,9 +17,3 @@ func isLCommand(raw string) bool {
 	tail := raw[len(raw)-1]
 	return head == '(' && tail == ')'
 }
-
-func toLCommand(raw string) (*lCommand, error) {
-	val := string(raw[1 : len(raw)-1])
-
-	return &lCommand{symbol: val}, nil
-}

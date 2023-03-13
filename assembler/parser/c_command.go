@@ -3,7 +3,6 @@ package parser
 import (
 	"assembler/code"
 	"errors"
-	"fmt"
 	"strings"
 )
 
@@ -162,22 +161,6 @@ func mapCodeJump(raw string) (*code.Jump, error) {
 	}
 
 	return &jump, nil
-}
-
-func toCCommand(raw string) (*cCommand, error) {
-	const TO_CCOMMAND_ERR = "toCCommand error: %w"
-
-	stmt, err := genCCommandStmt(raw)
-	if err != nil {
-		return nil, fmt.Errorf(TO_CCOMMAND_ERR, err)
-	}
-
-	cCommad, err := stmt.toCCommand()
-	if err != nil {
-		return nil, fmt.Errorf(TO_CCOMMAND_ERR, err)
-	}
-
-	return cCommad, nil
 }
 
 func genCCommandStmt(raw string) (cCommandStmt, error) {

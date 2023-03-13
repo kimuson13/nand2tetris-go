@@ -223,9 +223,81 @@ func TestToACommand(t *testing.T) {
 	}
 }
 
+func TestToLCommand(t *testing.T) {
+	testCases := map[string]struct {
+		raw  string
+		want *lCommand
+	}{
+		"ok": {"(hoge)", l(lSymbol("hoge"))},
+	}
+
+	for name, tc := range testCases {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			parser := p()
+			got, err := parser.toLCommand(tc.raw)
+			if err != nil {
+				t.Error(err)
+			}
+			if diff := cmp.Diff(got, tc.want, cmp.AllowUnexported(lCommand{})); diff != "" {
+				t.Errorf("want = %#v, but got = %#v\ndiff=%v", tc.want, got, diff)
+			}
+		})
+	}
+}
+
+func TestToCCommand(t *testing.T) {
+	testCases := map[string]struct {
+		in   string
+		want *cCommand
+	}{
+		"dest_comp_jump": {"hoge=huga;piyo", ccmd(pDest("hoge"), pComp("huga"), pJump("piyo"))},
+		"dest_comp":      {"hoge=huga", ccmd(pDest("hoge"), pComp("huga"))},
+		"comp_jump":      {"huga;piyo", ccmd(pComp("huga"), pJump("piyo"))},
+	}
+
+	for name, tc := range testCases {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			parser := p()
+			got, err := parser.toCCommand(tc.in)
+			if err != nil {
+				t.Error(err)
+			}
+
+			if diff := cmp.Diff(tc.want, got, cmp.AllowUnexported(cCommand{})); diff != "" {
+				t.Errorf("want != got\ndiff=%s", diff)
+			}
+		})
+	}
+}
+
 type Option[T any] func(val T)
 type ParserOption Option[*Parser]
 type ACommandOption func(val *aCommand)
+type LCommandOption Option[*lCommand]
+
+func l(opts ...LCommandOption) *lCommand {
+	lCommand := &lCommand{
+		symbol: "",
+	}
+
+	for _, opt := range opts {
+		opt(lCommand)
+	}
+
+	return lCommand
+}
+
+func lSymbol(v string) LCommandOption {
+	return func(val *lCommand) {
+		val.symbol = v
+	}
+}
 
 func a(opts ...ACommandOption) *aCommand {
 	aCommand := &aCommand{
