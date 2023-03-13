@@ -1,5 +1,7 @@
 package symtable
 
+import "errors"
+
 type SymTable struct {
 	mp symMap
 }
@@ -30,6 +32,11 @@ const (
 	R15    = "R15"
 	SCREEN = "SCREEN"
 	KBD    = "KBD"
+)
+
+var (
+	ErrDuplicateKeyEntry = errors.New("insert key is duplicated")
+	ErrNoSuchAKey        = errors.New("no such a key")
 )
 
 func New() *SymTable {
@@ -66,4 +73,28 @@ func genDefinedSymbol() symMap {
 	}
 
 	return mp
+}
+
+func (s *SymTable) AddEntry(symbol string, address int) error {
+	if s.Contains(symbol) {
+		return ErrDuplicateKeyEntry
+	}
+
+	s.mp[symbol] = address
+
+	return nil
+}
+
+func (s *SymTable) GetAddress(symbol string) (int, error) {
+	val, ok := s.mp[symbol]
+	if !ok {
+		return 0, ErrNoSuchAKey
+	}
+
+	return val, nil
+}
+
+func (s *SymTable) Contains(symbol string) bool {
+	_, ok := s.mp[symbol]
+	return ok
 }
