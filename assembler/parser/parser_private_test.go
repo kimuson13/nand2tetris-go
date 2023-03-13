@@ -63,7 +63,8 @@ func TestLinkLCommandSymbol(t *testing.T) {
 		{"HUGA", 3},
 	}
 
-	parser, close := setUp(t)
+	b := []byte("//comment\r\n@R1\r\n@123\r\n(HOGE)\r\n\r\nM=M+1\r\n(HUGA) // hoge")
+	parser, close := setUp(t, b)
 
 	if err := parser.linkLCommandSymbol(); err != nil {
 		t.Error(err)
@@ -83,15 +84,44 @@ func TestLinkLCommandSymbol(t *testing.T) {
 	close()
 }
 
-func setUp(t *testing.T) (Parser, func()) {
+func TestLinkACommandSymbol(t *testing.T) {
+	wants := []struct {
+		symbol  string
+		address int
+	}{
+		{"R1", 1},
+		{"YEAR", 16},
+	}
+
+	b := []byte("//comment\r\n@R1\r\n@123\r\n(HOGE)\r\n\r\nM=M+1\r\n(HUGA) // hoge\r\n@YEAR")
+	parser, close := setUp(t, b)
+
+	if err := parser.linkACommandSymbol(); err != nil {
+		t.Error(err)
+	}
+
+	for _, want := range wants {
+		got, err := parser.symbolTable.GetAddress(want.symbol)
+		if err != nil {
+			t.Error(err)
+		}
+
+		if got != want.address {
+			t.Errorf("want = %d, but got = %d", want.address, got)
+		}
+	}
+
+	close()
+}
+
+func setUp(t *testing.T, body []byte) (Parser, func()) {
 	t.Helper()
 	f, err := os.CreateTemp("./", "")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	b := []byte("//comment\r\n@R1\r\n@123\r\n(HOGE)\r\n\r\nM=M+1\r\n(HUGA) // hoge")
-	if _, err := f.Write(b); err != nil {
+	if _, err := f.Write(body); err != nil {
 		os.Remove(f.Name())
 		t.Fatal(err)
 	}

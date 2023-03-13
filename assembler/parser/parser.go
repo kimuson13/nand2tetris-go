@@ -122,7 +122,7 @@ func (p *Parser) linkLCommandSymbol() error {
 
 func (p *Parser) linkACommandSymbol() error {
 	const MIN_SYMBOL_ADDRESS = 16
-	aCommandCnt := 0
+	aCommandSymbolCnt := 0
 	for p.hasMoreCommand() {
 		command, err := p.commandType()
 		if err != nil {
@@ -132,12 +132,13 @@ func (p *Parser) linkACommandSymbol() error {
 		aCommand, ok := command.(*aCommand)
 		if ok {
 			symbol := aCommand.symbol
-			address := aCommandCnt + MIN_SYMBOL_ADDRESS
-			if err := p.addEntryToSymTable(symbol, address); err != nil {
-				return fmt.Errorf("link ACommand error: %w", err)
+			address := aCommandSymbolCnt + MIN_SYMBOL_ADDRESS
+			if !p.symbolTable.Contains(symbol) && symbol != "" {
+				if err := p.symbolTable.AddEntry(symbol, address); err != nil {
+					return fmt.Errorf("link ACommand error: %w", err)
+				}
+				aCommandSymbolCnt++
 			}
-
-			aCommandCnt++
 		}
 
 		p.advance()
@@ -237,7 +238,7 @@ func (p *Parser) toACommand(raw string) (*aCommand, error) {
 		return &aCommand{address: address, symbol: val}, nil
 	}
 
-	return nil, fmt.Errorf("toAComamnd error: %w: %s", ErrInvalidSyntax, val)
+	return &aCommand{symbol: val}, nil
 }
 
 func (p *Parser) toLCommand(raw string) (*lCommand, error) {
