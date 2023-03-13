@@ -89,6 +89,46 @@ func getCommand(raw string) (string, error) {
 }
 
 func (p *Parser) SynbolicLink() error {
+	symTable := symtable.New()
+	p.symbolTable = symTable
+
+	return nil
+}
+
+func (p *Parser) linkLCommandSymbol() error {
+	idx := 0
+	for p.hasMoreCommand() {
+		command, err := p.commandType()
+		if err != nil {
+			return fmt.Errorf("link LCommand error: %w", err)
+		}
+
+		lCommand := command.(*lCommand)
+		if lCommand == nil {
+			idx++
+			continue
+		}
+
+		if err := p.addEntryToSymTable(lCommand.symbol, idx); err != nil {
+			return fmt.Errorf("link LCommand error: %w", err)
+		}
+
+		p.advance()
+	}
+
+	p.resetCurrentIdx()
+	return nil
+}
+
+func (p *Parser) addEntryToSymTable(symbol string, address int) error {
+	if p.symbolTable.Contains(symbol) {
+		return nil
+	}
+
+	if err := p.symbolTable.AddEntry(symbol, address); err != nil {
+		return err
+	}
+
 	return nil
 }
 
