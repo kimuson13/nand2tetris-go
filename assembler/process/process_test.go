@@ -12,29 +12,32 @@ import (
 
 func TestRun(t *testing.T) {
 	testCases := map[string]struct {
-		asmPath string
-		want    string
+		asmPath  string
+		wantPath string
 	}{
-		"MaxL":  {"../tests/asm/MaxL.asm", getBody(t, "../tests/hack/MaxL.hack")},
-		"PongL": {"../tests/asm/PongL.asm", getBody(t, "../tests/hack/PongL.hack")},
-		"RectL": {"../tests/asm/RectL.asm", getBody(t, "../tests/hack/RectL.hack")},
+		"MaxL":  {"MaxL.asm", "MaxL.hack"},
+		"PongL": {"PongL.asm", "PongL.hack"},
+		"RectL": {"RectL.asm", "RectL.hack"},
 	}
 
 	for name, tc := range testCases {
 		tc := tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			dir, fileName := filepath.Split(tc.asmPath)
+			asmPath := joinAsm(tc.asmPath)
+
+			dir, fileName := filepath.Split(asmPath)
 			ext := filepath.Ext(tc.asmPath)
 			genHackPath := filepath.Join(dir, strings.ReplaceAll(fileName, ext, ".hack"))
 
-			if err := process.Run([]string{tc.asmPath}); err != nil {
+			if err := process.Run([]string{asmPath}); err != nil {
 				t.Fatal(err)
 			}
 
 			got := getBody(t, genHackPath)
-			if diff := cmp.Diff(tc.want, got); diff != "" {
-				t.Errorf("want:\n%s\ngot:\n%s\ndiff:\n%s", tc.want, got, diff)
+			want := getBody(t, joinHack(tc.wantPath))
+			if diff := cmp.Diff(want, got); diff != "" {
+				t.Errorf("want:\n%s\ngot:\n%s\ndiff:\n%s", want, got, diff)
 			}
 
 			if err := os.Remove(genHackPath); err != nil {
@@ -42,6 +45,14 @@ func TestRun(t *testing.T) {
 			}
 		})
 	}
+}
+
+func joinAsm(path string) string {
+	return filepath.Join("../tests/asm/", path)
+}
+
+func joinHack(path string) string {
+	return filepath.Join("../tests/hack/", path)
 }
 
 func getBody(t *testing.T, path string) string {
