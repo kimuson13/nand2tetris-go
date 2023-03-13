@@ -162,22 +162,34 @@ func (p *Parser) commandType() (Command, error) {
 
 	isEmptyString := currentCommand == ""
 	if isEmptyString {
-		return nil, ErrEmptyString
+		return nil, fmt.Errorf("commandType error: %w", ErrEmptyString)
 	}
 
 	if isACommand(currentCommand) {
-		return toACommand(currentCommand)
+		command, err := toACommand(currentCommand)
+		if err != nil {
+			return nil, fmt.Errorf("commandType error: %w", err)
+		}
+		return command, nil
 	}
 
 	if isLCommand(currentCommand) {
-		return toLCommand(currentCommand)
+		command, err := toLCommand(currentCommand)
+		if err != nil {
+			return nil, fmt.Errorf("commandType error: %w", err)
+		}
+		return command, nil
 	}
 
 	if isCCommand(currentCommand) {
-		return toCCommand(currentCommand)
+		command, err := toCCommand(currentCommand)
+		if err != nil {
+			return nil, fmt.Errorf("commandType error: %w", err)
+		}
+		return command, nil
 	}
 
-	return nil, ErrInvalidCommand
+	return nil, fmt.Errorf("commandType error: %w", ErrInvalidCommand)
 }
 
 func (p *Parser) advance() {
