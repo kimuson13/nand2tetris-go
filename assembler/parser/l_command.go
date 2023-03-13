@@ -2,14 +2,12 @@ package parser
 
 import "assembler/code"
 
-type LCommand struct {
-	value  int
+type lCommand struct {
 	symbol string
 }
 
-func (l *LCommand) parse() (code.Command, error) {
+func (l *lCommand) parse() (code.Command, error) {
 	return &code.LCommand{
-		Value:  l.value,
 		Symbol: l.symbol,
 	}, nil
 }
@@ -20,8 +18,8 @@ func isLCommand(raw string) bool {
 	return head == '(' && tail == ')'
 }
 
-func toLCommand(raw string) (*LCommand, error) {
+func toLCommand(raw string) (*lCommand, error) {
 	val := string(raw[1 : len(raw)-1])
 
-	return &LCommand{value: 0, symbol: val}, nil
+	return &lCommand{symbol: val}, nil
 }

@@ -30,9 +30,9 @@ func TestIsACommand(t *testing.T) {
 func TestToACommand(t *testing.T) {
 	testCases := map[string]struct {
 		raw  string
-		want *ACommand
+		want *aCommand
 	}{
-		"ok_with_no_symbol": {"@123", a(aValue(123))},
+		"ok_with_no_symbol": {"@123", a(aAddress(123))},
 	}
 
 	for name, tc := range testCases {
@@ -44,19 +44,19 @@ func TestToACommand(t *testing.T) {
 				t.Error(err)
 			}
 
-			if diff := cmp.Diff(got, tc.want, cmp.AllowUnexported(ACommand{})); diff != "" {
+			if diff := cmp.Diff(got, tc.want, cmp.AllowUnexported(aCommand{})); diff != "" {
 				t.Errorf("want = %#v, got = %#v, \ndiff: %s", tc.want, got, diff)
 			}
 		})
 	}
 }
 
-type ACommandOption func(val *ACommand)
+type ACommandOption func(val *aCommand)
 
-func a(opts ...ACommandOption) *ACommand {
-	aCommand := &ACommand{
-		value:  0,
-		symbol: "",
+func a(opts ...ACommandOption) *aCommand {
+	aCommand := &aCommand{
+		address: 0,
+		symbol:  "",
 	}
 
 	for _, opt := range opts {
@@ -66,14 +66,14 @@ func a(opts ...ACommandOption) *ACommand {
 	return aCommand
 }
 
-func aValue(v int) ACommandOption {
-	return func(val *ACommand) {
-		val.value = v
+func aAddress(v int) ACommandOption {
+	return func(val *aCommand) {
+		val.address = v
 	}
 }
 
 func aSymbol(v string) ACommandOption {
-	return func(val *ACommand) {
+	return func(val *aCommand) {
 		val.symbol = v
 	}
 }

@@ -16,7 +16,11 @@ func Run(args []string) error {
 		return fmt.Errorf("process error: %w", ErrInvalidArgsLength)
 	}
 
-	commands, err := parser.Parse(args[0])
+	parser, err := parser.New(args[0])
+	if err != nil {
+		return fmt.Errorf("process error: %w", err)
+	}
+	commands, err := parser.Parse()
 	if err != nil {
 		return fmt.Errorf("process error: %w", err)
 	}

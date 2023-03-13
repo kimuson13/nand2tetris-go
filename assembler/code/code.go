@@ -69,12 +69,12 @@ func (c *CCommand) jump() (string, error) {
 }
 
 type ACommand struct {
-	Value  int
-	Symbol string
+	Address int
+	Symbol  string
 }
 
 func (a *ACommand) Convert() (string, error) {
-	return fmt.Sprintf("0%015b", a.Value), nil
+	return fmt.Sprintf("0%015b", a.Address), nil
 }
 
 type LCommand struct {

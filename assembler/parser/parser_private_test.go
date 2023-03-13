@@ -1,45 +1,23 @@
 package parser
 
 import (
-	"os"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestPrepare(t *testing.T) {
-	testCases := map[string]struct {
-		fileVal string
-		want    Parser
-	}{
-		"one_line":        {"test", p(commands("test"))},
-		"many_lines":      {"test2\r\nhoge", p(commands("test2", "hoge"))},
-		"include_space":   {"test     \r\nhuga", p(commands("test", "huga"))},
-		"include_comment": {"//comment\r\n@123", p(commands("@123"))},
-		"inline_comment":  {"@123 //123\r\n(hoge)", p(commands("@123", "(hoge)"))},
+func TestGetCommands(t *testing.T) {
+	t.Parallel()
+	in := s("@123", "// comment", "(hoge) // hello", "", "M=M+1;JMP")
+	want := s("@123", "(hoge)", "M=M+1;JMP")
+
+	got, err := getCommands(in)
+	if err != nil {
+		t.Fatal(err)
 	}
 
-	for name, tc := range testCases {
-		tc := tc
-		t.Run(name, func(t *testing.T) {
-			t.Parallel()
-			f, err := os.CreateTemp("./", "")
-			if err != nil {
-				t.Fatal(err)
-			}
-			f.Write([]byte(tc.fileVal))
-
-			got, err := prepare(f.Name())
-			if err != nil {
-				t.Error(err)
-			}
-
-			if diff := cmp.Diff(got, tc.want, cmp.AllowUnexported(Parser{})); diff != "" {
-				t.Errorf("want = %#v, got = %#v, \ndiff: %s", tc.want, got, diff)
-			}
-
-			os.Remove(f.Name())
-		})
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("want:\n%v\ngot:\n%v\ndiff:\n%s", want, got, diff)
 	}
 }
 
@@ -118,7 +96,7 @@ func TestCommandType(t *testing.T) {
 		in   []string
 		want Command
 	}{
-		"a_command": {s("@123"), a(aValue(123))},
+		"a_command": {s("@123"), a(aAddress(123))},
 		"l_command": {s("(hoge)"), l(lSymbol("hoge"))},
 		"c_command": {s("hoge=huga;piyo"), ccmd(pDest("hoge"), pComp("huga"), pJump("piyo"))},
 	}
@@ -134,7 +112,7 @@ func TestCommandType(t *testing.T) {
 				t.Error(err)
 			}
 
-			if diff := cmp.Diff(tc.want, got, cmp.AllowUnexported(ACommand{}, LCommand{}, CCommand{})); diff != "" {
+			if diff := cmp.Diff(tc.want, got, cmp.AllowUnexported(aCommand{}, lCommand{}, cCommand{})); diff != "" {
 				t.Errorf(diff)
 			}
 		})

@@ -9,14 +9,14 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestParse(t *testing.T) {
+func TestParser_Parse(t *testing.T) {
 	f, err := os.CreateTemp("./", "")
 	if err != nil {
 		t.Fatal(err)
 	}
 	in := "//hogehoge\r\n@123 //hoge\r\n(HOGE)\r\nM=M+1;JMP\r\nD=D-M"
 	want := []code.Command{
-		&code.ACommand{Value: 123},
+		&code.ACommand{Address: 123},
 		&code.LCommand{Symbol: "HOGE"},
 		&code.CCommand{
 			Dest: ptr(code.DEST_M),
@@ -27,8 +27,16 @@ func TestParse(t *testing.T) {
 			Comp: code.COMP_D_MINUS_M,
 		},
 	}
-	f.Write([]byte(in))
-	got, err := parser.Parse(f.Name())
+	if _, err := f.Write([]byte(in)); err != nil {
+		t.Fatal(err)
+	}
+
+	p, err := parser.New(f.Name())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	got, err := p.Parse()
 	if err != nil {
 		t.Error(err)
 	}

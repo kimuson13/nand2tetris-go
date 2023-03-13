@@ -65,8 +65,8 @@ func TestACommand_Convert(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			aCommand := code.ACommand{
-				Symbol: tc.symbol,
-				Value:  tc.value,
+				Symbol:  tc.symbol,
+				Address: tc.value,
 			}
 
 			got, err := aCommand.Convert()
