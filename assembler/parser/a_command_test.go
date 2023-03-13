@@ -9,9 +9,12 @@ func TestIsACommand(t *testing.T) {
 		raw  string
 		want bool
 	}{
-		"ok_no_symbol":   {"@123", true},
-		"ok_with_symbol": {"@hoge", true},
-		"ng_not_start_@": {"hoge", false},
+		"no_symbol":            {"@123", true},
+		"with_symbol":          {"@hoge", true},
+		"include_underscore":   {"@HOGE_HOGE", true},
+		"not_start_@":          {"hoge", false},
+		"start_num_symbol":     {"@1hoge", false},
+		"include_invalid_char": {"@hoge,", false},
 	}
 
 	for name, tc := range testCases {

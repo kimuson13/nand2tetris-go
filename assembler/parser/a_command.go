@@ -2,6 +2,7 @@ package parser
 
 import (
 	"assembler/code"
+	"regexp"
 )
 
 type aCommand struct {
@@ -16,7 +17,11 @@ func (a *aCommand) parse() (code.Command, error) {
 	}, nil
 }
 
+var (
+	aCommandDirectAddressRegExp = regexp.MustCompile(`^@[0-9]+$`)
+	aCommandSymbolRegExp        = regexp.MustCompile(`^@[a-zA-Z\.\$_:]{1}[0-9a-zA-Z\.\$_:]*$`)
+)
+
 func isACommand(raw string) bool {
-	head := raw[0]
-	return head == '@'
+	return aCommandDirectAddressRegExp.MatchString(raw) || aCommandSymbolRegExp.MatchString(raw)
 }
