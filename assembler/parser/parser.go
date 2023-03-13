@@ -111,10 +111,6 @@ func (p *Parser) hasMoreCommand() bool {
 	return len(p.commands) > p.currentIdx
 }
 
-func (p *Parser) advance() {
-	p.currentIdx++
-}
-
 func (p *Parser) commandType() (Command, error) {
 	currentCommand := p.commands[p.currentIdx]
 
@@ -136,4 +132,8 @@ func (p *Parser) commandType() (Command, error) {
 	}
 
 	return nil, ErrInvalidCommand
+}
+
+func (p *Parser) advance() {
+	p.currentIdx++
 }
