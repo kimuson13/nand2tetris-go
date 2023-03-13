@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-const NEW_LINE = "\r\n"
+const NEW_LINE = "\n"
 
 var (
 	ErrEmptyString       = errors.New("empty string")
@@ -50,7 +50,7 @@ func getCommands(lines []string) ([]string, error) {
 	for _, line := range lines {
 		command, err := getCommand(line)
 		if err != nil {
-			return commands, fmt.Errorf("prepare error: %w", err)
+			return commands, fmt.Errorf("getCommands error: %w", err)
 		}
 
 		if command != "" {
@@ -69,7 +69,7 @@ func getCommand(raw string) (string, error) {
 
 	commentCnt := strings.Count(line, "//")
 	if commentCnt > 1 {
-		return "", ErrTooManyCommentLit
+		return "", fmt.Errorf("getCommand error: %w, raw=%s", ErrTooManyCommentLit, raw)
 	}
 
 	if string(line[0:2]) == "//" {
