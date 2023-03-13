@@ -112,7 +112,7 @@ func TestCommandType(t *testing.T) {
 				t.Error(err)
 			}
 
-			if diff := cmp.Diff(tc.want, got, cmp.AllowUnexported(ACommand{}, LCommand{}, CCommand{})); diff != "" {
+			if diff := cmp.Diff(tc.want, got, cmp.AllowUnexported(aCommand{}, lCommand{}, cCommand{})); diff != "" {
 				t.Errorf(diff)
 			}
 		})

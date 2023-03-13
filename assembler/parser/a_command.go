@@ -5,12 +5,12 @@ import (
 	"strconv"
 )
 
-type ACommand struct {
+type aCommand struct {
 	address int
 	symbol  string
 }
 
-func (a *ACommand) parse() (code.Command, error) {
+func (a *aCommand) parse() (code.Command, error) {
 	return &code.ACommand{
 		Address: a.address,
 		Symbol:  a.symbol,
@@ -22,12 +22,12 @@ func isACommand(raw string) bool {
 	return head == '@'
 }
 
-func toACommand(raw string) (*ACommand, error) {
+func toACommand(raw string) (*aCommand, error) {
 	val := string(raw[1:])
 	i, err := strconv.Atoi(val)
 	if err != nil {
 		return nil, err
 	}
 
-	return &ACommand{address: i, symbol: ""}, nil
+	return &aCommand{address: i, symbol: ""}, nil
 }

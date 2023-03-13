@@ -31,7 +31,7 @@ func TestIsLCommand(t *testing.T) {
 func TestToLCommand(t *testing.T) {
 	testCases := map[string]struct {
 		raw  string
-		want *LCommand
+		want *lCommand
 	}{
 		"ok": {"(hoge)", l(lSymbol("hoge"))},
 	}
@@ -45,17 +45,17 @@ func TestToLCommand(t *testing.T) {
 			if err != nil {
 				t.Error(err)
 			}
-			if diff := cmp.Diff(got, tc.want, cmp.AllowUnexported(LCommand{})); diff != "" {
+			if diff := cmp.Diff(got, tc.want, cmp.AllowUnexported(lCommand{})); diff != "" {
 				t.Errorf("want = %#v, but got = %#v\ndiff=%v", tc.want, got, diff)
 			}
 		})
 	}
 }
 
-type LCommandOption Option[*LCommand]
+type LCommandOption Option[*lCommand]
 
-func l(opts ...LCommandOption) *LCommand {
-	lCommand := &LCommand{
+func l(opts ...LCommandOption) *lCommand {
+	lCommand := &lCommand{
 		symbol: "",
 	}
 
@@ -67,7 +67,7 @@ func l(opts ...LCommandOption) *LCommand {
 }
 
 func lSymbol(v string) LCommandOption {
-	return func(val *LCommand) {
+	return func(val *lCommand) {
 		val.symbol = v
 	}
 }

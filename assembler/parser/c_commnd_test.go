@@ -34,7 +34,7 @@ func TestIsCCommand(t *testing.T) {
 func TestParse(t *testing.T) {
 	const wantErr, noErr = true, false
 	testCases := map[string]struct {
-		in      CCommand
+		in      cCommand
 		want    *code.CCommand
 		wantErr bool
 	}{
@@ -65,7 +65,7 @@ func TestParse(t *testing.T) {
 				t.Error(err)
 			}
 
-			if diff := cmp.Diff(tc.want, got, cmp.AllowUnexported(CCommand{})); diff != "" {
+			if diff := cmp.Diff(tc.want, got, cmp.AllowUnexported(cCommand{})); diff != "" {
 				t.Errorf("diff=%v", diff)
 			}
 		})
@@ -168,7 +168,7 @@ func TestGenCComandStmt(t *testing.T) {
 	const wantErr, noErr = true, false
 	testCases := map[string]struct {
 		in      string
-		want    CCommandStmt
+		want    cCommandStmt
 		wantErr bool
 	}{
 		"dest_comp_jump": {"hoge=huga;piyo", ccstmt(csRaw("hoge=huga;piyo"), eqPos(4), semiCPos(9), kind(DEST_COMP_JUMP)), noErr},
@@ -186,7 +186,7 @@ func TestGenCComandStmt(t *testing.T) {
 				t.Error(err)
 			}
 
-			if diff := cmp.Diff(got, tc.want, cmp.AllowUnexported(CCommandStmt{})); diff != "" {
+			if diff := cmp.Diff(got, tc.want, cmp.AllowUnexported(cCommandStmt{})); diff != "" {
 				t.Errorf("want = %#v\ngot =%#v\ndiff=%s", tc.want, got, diff)
 			}
 		})
@@ -196,7 +196,7 @@ func TestGenCComandStmt(t *testing.T) {
 func TestToCCommand(t *testing.T) {
 	testCases := map[string]struct {
 		in   string
-		want *CCommand
+		want *cCommand
 	}{
 		"dest_comp_jump": {"hoge=huga;piyo", ccmd(pDest("hoge"), pComp("huga"), pJump("piyo"))},
 		"dest_comp":      {"hoge=huga", ccmd(pDest("hoge"), pComp("huga"))},
@@ -213,7 +213,7 @@ func TestToCCommand(t *testing.T) {
 				t.Error(err)
 			}
 
-			if diff := cmp.Diff(tc.want, got, cmp.AllowUnexported(CCommand{})); diff != "" {
+			if diff := cmp.Diff(tc.want, got, cmp.AllowUnexported(cCommand{})); diff != "" {
 				t.Errorf("want != got\ndiff=%s", diff)
 			}
 		})
@@ -223,7 +223,7 @@ func TestToCCommand(t *testing.T) {
 func TestStmtToCCommand(t *testing.T) {
 	testCases := map[string]struct {
 		in   string
-		want *CCommand
+		want *cCommand
 	}{
 		"dest_comp_jump": {"hoge=huga;piyo", ccmd(pDest("hoge"), pComp("huga"), pJump("piyo"))},
 		"dest_comp":      {"hoge=huga", ccmd(pDest("hoge"), pComp("huga"))},
@@ -244,7 +244,7 @@ func TestStmtToCCommand(t *testing.T) {
 				t.Error(err)
 			}
 
-			if diff := cmp.Diff(tc.want, got, cmp.AllowUnexported(CCommand{})); diff != "" {
+			if diff := cmp.Diff(tc.want, got, cmp.AllowUnexported(cCommand{})); diff != "" {
 				t.Errorf("want != got\ndiff=%s", diff)
 			}
 		})
@@ -254,7 +254,7 @@ func TestStmtToCCommand(t *testing.T) {
 func TestToDestCompJump(t *testing.T) {
 	testCases := map[string]struct {
 		in   string
-		want *CCommand
+		want *cCommand
 	}{
 		"normal": {"hoge=huga;piyo", ccmd(pDest("hoge"), pComp("huga"), pJump("piyo"))},
 		"long":   {"hogehogehoge=hugahugahhh;pipipioooo", ccmd(pDest("hogehogehoge"), pComp("hugahugahhh"), pJump("pipipioooo"))},
@@ -275,7 +275,7 @@ func TestToDestCompJump(t *testing.T) {
 				t.Error(err)
 			}
 
-			if diff := cmp.Diff(tc.want, got, cmp.AllowUnexported(CCommand{})); diff != "" {
+			if diff := cmp.Diff(tc.want, got, cmp.AllowUnexported(cCommand{})); diff != "" {
 				t.Errorf("want != got\ndiff=%s", diff)
 			}
 		})
@@ -285,7 +285,7 @@ func TestToDestCompJump(t *testing.T) {
 func TestToDestComp(t *testing.T) {
 	testCases := map[string]struct {
 		in   string
-		want *CCommand
+		want *cCommand
 	}{
 		"normal": {"hoge=huga", ccmd(pDest("hoge"), pComp("huga"))},
 		"long":   {"hogehogehoge=hugahugahhh", ccmd(pDest("hogehogehoge"), pComp("hugahugahhh"))},
@@ -306,7 +306,7 @@ func TestToDestComp(t *testing.T) {
 				t.Error(err)
 			}
 
-			if diff := cmp.Diff(tc.want, got, cmp.AllowUnexported(CCommand{})); diff != "" {
+			if diff := cmp.Diff(tc.want, got, cmp.AllowUnexported(cCommand{})); diff != "" {
 				t.Errorf("want != got\ndiff=%s", diff)
 			}
 		})
@@ -316,7 +316,7 @@ func TestToDestComp(t *testing.T) {
 func TestToCompJump(t *testing.T) {
 	testCases := map[string]struct {
 		in   string
-		want *CCommand
+		want *cCommand
 	}{
 		"normal": {"huga;piyo", ccmd(pComp("huga"), pJump("piyo"))},
 		"long":   {"hugahugahhh;pipipioooo", ccmd(pComp("hugahugahhh"), pJump("pipipioooo"))},
@@ -337,7 +337,7 @@ func TestToCompJump(t *testing.T) {
 				t.Error(err)
 			}
 
-			if diff := cmp.Diff(tc.want, got, cmp.AllowUnexported(CCommand{})); diff != "" {
+			if diff := cmp.Diff(tc.want, got, cmp.AllowUnexported(cCommand{})); diff != "" {
 				t.Errorf("want != got\ndiff=%s", diff)
 			}
 		})
@@ -348,12 +348,12 @@ func ptr[T any](val T) *T {
 	return &val
 }
 
-type CComandStmtOption = Option[*CCommandStmt]
-type CCommandOption = Option[*CCommand]
+type CComandStmtOption = Option[*cCommandStmt]
+type CCommandOption = Option[*cCommand]
 type CodeCComandOption = Option[*code.CCommand]
 
-func ccstmt(opts ...CComandStmtOption) CCommandStmt {
-	ccstmt := CCommandStmt{eqPos: -1, semiColonPos: -1}
+func ccstmt(opts ...CComandStmtOption) cCommandStmt {
+	ccstmt := cCommandStmt{eqPos: -1, semiColonPos: -1}
 
 	for _, opt := range opts {
 		opt(&ccstmt)
@@ -362,8 +362,8 @@ func ccstmt(opts ...CComandStmtOption) CCommandStmt {
 	return ccstmt
 }
 
-func ccmd(opts ...CCommandOption) *CCommand {
-	cCommand := &CCommand{}
+func ccmd(opts ...CCommandOption) *cCommand {
+	cCommand := &cCommand{}
 
 	for _, opt := range opts {
 		opt(cCommand)
@@ -405,43 +405,43 @@ func cJump(v code.Jump) CodeCComandOption {
 }
 
 func csRaw(v string) CComandStmtOption {
-	return func(val *CCommandStmt) {
+	return func(val *cCommandStmt) {
 		val.raw = v
 	}
 }
 
 func eqPos(v int) CComandStmtOption {
-	return func(val *CCommandStmt) {
+	return func(val *cCommandStmt) {
 		val.eqPos = v
 	}
 }
 
 func semiCPos(v int) CComandStmtOption {
-	return func(val *CCommandStmt) {
+	return func(val *cCommandStmt) {
 		val.semiColonPos = v
 	}
 }
 
-func kind(v CCommandKind) CComandStmtOption {
-	return func(val *CCommandStmt) {
+func kind(v cCommandKind) CComandStmtOption {
+	return func(val *cCommandStmt) {
 		val.kind = v
 	}
 }
 
 func pDest(v string) CCommandOption {
-	return func(val *CCommand) {
+	return func(val *cCommand) {
 		val.dest = v
 	}
 }
 
 func pComp(v string) CCommandOption {
-	return func(val *CCommand) {
+	return func(val *cCommand) {
 		val.comp = v
 	}
 }
 
 func pJump(v string) CCommandOption {
-	return func(val *CCommand) {
+	return func(val *cCommand) {
 		val.jump = v
 	}
 }
