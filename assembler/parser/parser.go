@@ -120,6 +120,33 @@ func (p *Parser) linkLCommandSymbol() error {
 	return nil
 }
 
+func (p *Parser) linkACommandSymbol() error {
+	const MIN_SYMBOL_ADDRESS = 16
+	aCommandCnt := 0
+	for p.hasMoreCommand() {
+		command, err := p.commandType()
+		if err != nil {
+			return fmt.Errorf("link ACommand error: %w", err)
+		}
+
+		aCommand, ok := command.(*aCommand)
+		if ok {
+			symbol := aCommand.symbol
+			address := aCommandCnt + MIN_SYMBOL_ADDRESS
+			if err := p.addEntryToSymTable(symbol, address); err != nil {
+				return fmt.Errorf("link ACommand error: %w", err)
+			}
+
+			aCommandCnt++
+		}
+
+		p.advance()
+	}
+
+	p.resetCurrentIdx()
+	return nil
+}
+
 func (p *Parser) addEntryToSymTable(symbol string, address int) error {
 	if p.symbolTable.Contains(symbol) {
 		return nil
