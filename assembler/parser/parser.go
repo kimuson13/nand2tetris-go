@@ -137,3 +137,7 @@ func (p *Parser) commandType() (Command, error) {
 func (p *Parser) advance() {
 	p.currentIdx++
 }
+
+func (p *Parser) resetCurrentIdx() {
+	p.currentIdx = 0
+}
