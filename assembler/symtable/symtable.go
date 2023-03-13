@@ -33,10 +33,8 @@ const (
 )
 
 func New() *SymTable {
-	symMap := genDefinedSymbol()
-
 	return &SymTable{
-		mp: symMap,
+		mp: genDefinedSymbol(),
 	}
 }
 
