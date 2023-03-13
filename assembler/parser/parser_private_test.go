@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"assembler/symtable"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -49,6 +50,31 @@ func TestGetCommand(t *testing.T) {
 				t.Errorf("want = %s, but got = %s", tc.want, got)
 			}
 		})
+	}
+}
+
+func TestAddEntryToSymTable(t *testing.T) {
+	parser := p()
+	in := struct {
+		symbol  string
+		address int
+	}{
+		"hoge",
+		123,
+	}
+	want := 123
+
+	if err := parser.addEntryToSymTable(in.symbol, in.address); err != nil {
+		t.Fatal(err)
+	}
+
+	got, err := parser.symbolTable.GetAddress(in.symbol)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if got != want {
+		t.Errorf("want = %d, but got = %d", want, got)
 	}
 }
 
@@ -124,8 +150,9 @@ type ParserOption Option[*Parser]
 
 func p(opts ...ParserOption) Parser {
 	parser := &Parser{
-		commands:   []string{},
-		currentIdx: 0,
+		commands:    []string{},
+		currentIdx:  0,
+		symbolTable: symtable.New(),
 	}
 
 	for _, opt := range opts {
