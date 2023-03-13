@@ -8,6 +8,35 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
+func TestSymbolicLink(t *testing.T) {
+	b := "// comment\r\n@R0\r\n@123\r\n(HOGE)\r\n@YEAR\r\n@HOGE"
+	parser, close := setUp(t, []byte(b))
+	wants := []struct {
+		symbol  string
+		address int
+	}{
+		{"HOGE", 2},
+		{"YEAR", 16},
+	}
+
+	if err := parser.SymbolicLink(); err != nil {
+		t.Error(err)
+	}
+
+	for _, want := range wants {
+		got, err := parser.symbolTable.GetAddress(want.symbol)
+		if err != nil {
+			t.Error(err)
+		}
+
+		if got != want.address {
+			t.Errorf("want = %d, but got = %d", want.address, got)
+		}
+	}
+
+	close()
+}
+
 func TestGetCommands(t *testing.T) {
 	t.Parallel()
 	in := s("@123", "// comment", "(hoge) // hello", "", "M=M+1;JMP")
