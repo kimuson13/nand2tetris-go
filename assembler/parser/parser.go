@@ -93,6 +93,14 @@ func (p *Parser) SynbolicLink() error {
 	symTable := symtable.New()
 	p.symbolTable = symTable
 
+	if err := p.linkLCommandSymbol(); err != nil {
+		return fmt.Errorf("symbolic link error: %w", err)
+	}
+
+	if err := p.linkACommandSymbol(); err != nil {
+		return fmt.Errorf("symbolic link error: %w", err)
+	}
+
 	return nil
 }
 
