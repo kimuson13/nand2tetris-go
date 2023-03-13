@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -103,14 +104,13 @@ func (p *Parser) linkLCommandSymbol() error {
 			return fmt.Errorf("link LCommand error: %w", err)
 		}
 
-		lCommand := command.(*lCommand)
-		if lCommand == nil {
+		lCommand, ok := command.(*lCommand)
+		if ok {
+			if err := p.addEntryToSymTable(lCommand.symbol, idx); err != nil {
+				return fmt.Errorf("link LCommand error: %w", err)
+			}
+		} else {
 			idx++
-			continue
-		}
-
-		if err := p.addEntryToSymTable(lCommand.symbol, idx); err != nil {
-			return fmt.Errorf("link LCommand error: %w", err)
 		}
 
 		p.advance()
@@ -166,7 +166,7 @@ func (p *Parser) commandType() (Command, error) {
 	}
 
 	if isACommand(currentCommand) {
-		command, err := toACommand(currentCommand)
+		command, err := p.toACommand(currentCommand)
 		if err != nil {
 			return nil, fmt.Errorf("commandType error: %w", err)
 		}
@@ -190,6 +190,32 @@ func (p *Parser) commandType() (Command, error) {
 	}
 
 	return nil, fmt.Errorf("commandType error: %w", ErrInvalidCommand)
+}
+
+func (p *Parser) toACommand(raw string) (*aCommand, error) {
+	val := string(raw[1:])
+	if isNumeric(val) {
+		i, err := strconv.Atoi(val)
+		if err != nil {
+			return nil, fmt.Errorf("toACommand error: %w", err)
+		}
+		return &aCommand{address: i, symbol: ""}, nil
+	}
+
+	if p.symbolTable.Contains(val) {
+		address, err := p.symbolTable.GetAddress(val)
+		if err != nil {
+			return nil, fmt.Errorf("toACommand error: %w", err)
+		}
+		return &aCommand{address: address, symbol: val}, nil
+	}
+
+	return nil, fmt.Errorf("toAComamnd error: %w: %s", ErrInvalidSyntax, val)
+}
+
+func isNumeric(val string) bool {
+	_, err := strconv.Atoi(val)
+	return err == nil
 }
 
 func (p *Parser) advance() {

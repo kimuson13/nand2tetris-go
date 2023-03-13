@@ -64,7 +64,6 @@ func TestLinkLCommandSymbol(t *testing.T) {
 	}
 
 	parser, close := setUp(t)
-	defer close()
 
 	if err := parser.linkLCommandSymbol(); err != nil {
 		t.Error(err)
@@ -80,6 +79,8 @@ func TestLinkLCommandSymbol(t *testing.T) {
 			t.Errorf("want = %d, but got = %d", want.address, got)
 		}
 	}
+
+	close()
 }
 
 func setUp(t *testing.T) (Parser, func()) {
@@ -89,7 +90,7 @@ func setUp(t *testing.T) (Parser, func()) {
 		t.Fatal(err)
 	}
 
-	b := []byte("//comment\r\n@YEAR\r\n@123\r\n(HOGE)\r\n\r\nM=M+1\r\n(HUGA) // hoge")
+	b := []byte("//comment\r\n@R1\r\n@123\r\n(HOGE)\r\n\r\nM=M+1\r\n(HUGA) // hoge")
 	if _, err := f.Write(b); err != nil {
 		os.Remove(f.Name())
 		t.Fatal(err)
@@ -100,6 +101,7 @@ func setUp(t *testing.T) (Parser, func()) {
 		os.Remove(f.Name())
 		t.Fatal(err)
 	}
+	parser.symbolTable = symtable.New()
 
 	return parser, func() { os.Remove(f.Name()) }
 }
@@ -196,8 +198,59 @@ func TestCommandType(t *testing.T) {
 	}
 }
 
+func TestToACommand(t *testing.T) {
+	testCases := map[string]struct {
+		raw  string
+		want *aCommand
+	}{
+		"ok_with_no_symbol": {"@123", a(aAddress(123))},
+	}
+
+	for name, tc := range testCases {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			parser := p()
+			got, err := parser.toACommand(tc.raw)
+			if err != nil {
+				t.Error(err)
+			}
+
+			if diff := cmp.Diff(got, tc.want, cmp.AllowUnexported(aCommand{})); diff != "" {
+				t.Errorf("want = %#v, got = %#v, \ndiff: %s", tc.want, got, diff)
+			}
+		})
+	}
+}
+
 type Option[T any] func(val T)
 type ParserOption Option[*Parser]
+type ACommandOption func(val *aCommand)
+
+func a(opts ...ACommandOption) *aCommand {
+	aCommand := &aCommand{
+		address: 0,
+		symbol:  "",
+	}
+
+	for _, opt := range opts {
+		opt(aCommand)
+	}
+
+	return aCommand
+}
+
+func aAddress(v int) ACommandOption {
+	return func(val *aCommand) {
+		val.address = v
+	}
+}
+
+func aSymbol(v string) ACommandOption {
+	return func(val *aCommand) {
+		val.symbol = v
+	}
+}
 
 func p(opts ...ParserOption) Parser {
 	parser := &Parser{

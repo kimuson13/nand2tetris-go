@@ -2,7 +2,6 @@ package parser
 
 import (
 	"assembler/code"
-	"strconv"
 )
 
 type aCommand struct {
@@ -20,14 +19,4 @@ func (a *aCommand) parse() (code.Command, error) {
 func isACommand(raw string) bool {
 	head := raw[0]
 	return head == '@'
-}
-
-func toACommand(raw string) (*aCommand, error) {
-	val := string(raw[1:])
-	i, err := strconv.Atoi(val)
-	if err != nil {
-		return nil, err
-	}
-
-	return &aCommand{address: i, symbol: ""}, nil
 }
