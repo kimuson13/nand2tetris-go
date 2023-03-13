@@ -91,9 +91,10 @@ func TestLinkACommandSymbol(t *testing.T) {
 	}{
 		{"R1", 1},
 		{"YEAR", 16},
+		{"HOO", 17},
 	}
 
-	b := []byte("//comment\r\n@R1\r\n@123\r\n(HOGE)\r\n\r\nM=M+1\r\n(HUGA) // hoge\r\n@YEAR")
+	b := []byte("//comment\r\n@R1\r\n@123\r\n(HOGE)\r\n\r\nM=M+1\r\n(HUGA) // hoge\r\n@YEAR\r\n@HOO")
 	parser, close := setUp(t, b)
 
 	if err := parser.linkACommandSymbol(); err != nil {
