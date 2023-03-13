@@ -2,7 +2,7 @@ package parser
 
 import (
 	"assembler/code"
-	"strconv"
+	"regexp"
 )
 
 type aCommand struct {
@@ -17,17 +17,11 @@ func (a *aCommand) parse() (code.Command, error) {
 	}, nil
 }
 
+var (
+	aCommandDirectAddressRegExp = regexp.MustCompile(`^@[0-9]+$`)
+	aCommandSymbolRegExp        = regexp.MustCompile(`^@[a-zA-Z\.\$_:]{1}[0-9a-zA-Z\.\$_:]*$`)
+)
+
 func isACommand(raw string) bool {
-	head := raw[0]
-	return head == '@'
-}
-
-func toACommand(raw string) (*aCommand, error) {
-	val := string(raw[1:])
-	i, err := strconv.Atoi(val)
-	if err != nil {
-		return nil, err
-	}
-
-	return &aCommand{address: i, symbol: ""}, nil
+	return aCommandDirectAddressRegExp.MatchString(raw) || aCommandSymbolRegExp.MatchString(raw)
 }

@@ -20,6 +20,11 @@ func Run(args []string) error {
 	if err != nil {
 		return fmt.Errorf("process error: %w", err)
 	}
+
+	if err := parser.SymbolicLink(); err != nil {
+		return fmt.Errorf("process error: %w", err)
+	}
+
 	commands, err := parser.Parse()
 	if err != nil {
 		return fmt.Errorf("process error: %w", err)
