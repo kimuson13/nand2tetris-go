@@ -18,6 +18,11 @@ func TestRun(t *testing.T) {
 		"MaxL":  {"MaxL.asm", "MaxL.hack"},
 		"PongL": {"PongL.asm", "PongL.hack"},
 		"RectL": {"RectL.asm", "RectL.hack"},
+		"Add":   {"Add.asm", "Add.hack"},
+		"Max":   {"Max.asm", "Max.hack"},
+		"Pong":  {"Pong.asm", "Pong.hack"},
+		"Rect":  {"Rect.asm", "Rect.hack"},
+		"Prog":  {"Prog.asm", "Prog.hack"},
 	}
 
 	for name, tc := range testCases {
