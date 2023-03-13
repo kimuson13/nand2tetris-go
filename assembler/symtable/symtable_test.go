@@ -41,7 +41,7 @@ func TestSymTable_GetAddress(t *testing.T) {
 		want    int
 		wantErr bool
 	}{
-		"ok": {symtable.SCREEN, 16348, noErr},
+		"ok": {symtable.SCREEN, 16384, noErr},
 		"ng": {"hoge", 0, wantErr},
 	}
 

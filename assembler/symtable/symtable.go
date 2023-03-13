@@ -68,7 +68,7 @@ func genDefinedSymbol() symMap {
 		R13:    13,
 		R14:    14,
 		R15:    15,
-		SCREEN: 16348,
+		SCREEN: 16384,
 		KBD:    24578,
 	}
 
