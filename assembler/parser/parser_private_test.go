@@ -2,6 +2,7 @@ package parser
 
 import (
 	"assembler/symtable"
+	"os"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -51,6 +52,56 @@ func TestGetCommand(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestLinkLCommandSymbol(t *testing.T) {
+	wants := []struct {
+		symbol  string
+		address int
+	}{
+		{"HOGE", 2},
+		{"HUGA", 3},
+	}
+
+	parser, close := setUp(t)
+	defer close()
+
+	if err := parser.linkLCommandSymbol(); err != nil {
+		t.Error(err)
+	}
+
+	for _, want := range wants {
+		got, err := parser.symbolTable.GetAddress(want.symbol)
+		if err != nil {
+			t.Error(err)
+		}
+
+		if got != want.address {
+			t.Errorf("want = %d, but got = %d", want.address, got)
+		}
+	}
+}
+
+func setUp(t *testing.T) (Parser, func()) {
+	t.Helper()
+	f, err := os.CreateTemp("./", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	b := []byte("//comment\r\n@YEAR\r\n@123\r\n(HOGE)\r\n\r\nM=M+1\r\n(HUGA) // hoge")
+	if _, err := f.Write(b); err != nil {
+		os.Remove(f.Name())
+		t.Fatal(err)
+	}
+
+	parser, err := New(f.Name())
+	if err != nil {
+		os.Remove(f.Name())
+		t.Fatal(err)
+	}
+
+	return parser, func() { os.Remove(f.Name()) }
 }
 
 func TestAddEntryToSymTable(t *testing.T) {
