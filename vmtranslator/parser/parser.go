@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"vmtranslator/codewriter"
 )
 
 const NEW_LINE = "\n"
@@ -116,6 +117,49 @@ func (p Parser) commandType() command {
 	}
 
 	return INVALID
+}
+
+func (p Parser) parse(c command) (codewriter.Command, error) {
+	switch c {
+	case C_ARITHMETIC:
+		command, err := p.parseArithmetic()
+		if err != nil {
+			return nil, fmt.Errorf("parse error: %w", err)
+		}
+		return command, nil
+	case C_PUSH:
+	}
+
+	return nil, nil
+}
+
+func (p Parser) parseArithmetic() (codewriter.Arithmetic, error) {
+	arithmetic := codewriter.Arithmetic{}
+	cType, err := p.arg1(C_ARITHMETIC)
+	if err != nil {
+		return arithmetic, fmt.Errorf("arithmetci error : %w", err)
+	}
+
+	kind, err := mapCommandTypeToCodeWriterKind(commandType(cType))
+	if err != nil {
+		return arithmetic, fmt.Errorf("arithmetic error: %w", err)
+	}
+
+	arithmetic.Kind = kind
+	return arithmetic, nil
+}
+
+func mapCommandTypeToCodeWriterKind(cType commandType) (codewriter.ArithmeticKind, error) {
+	mp := map[commandType]codewriter.ArithmeticKind{
+		ADD: codewriter.ADD,
+	}
+
+	val, ok := mp[cType]
+	if !ok {
+		return 0, fmt.Errorf("mapCommandTypeToCodeWriterKind: %w", ErrInvalidCommand)
+	}
+
+	return val, nil
 }
 
 func (p Parser) arg1(c command) (string, error) {
