@@ -45,16 +45,14 @@ currentIdxとcommandsの長さ比較
 currentIdxのインクリメントをする。
 インクリメント後にcurrentCommandに新しいcommandを空白区切りの文字列の配列に変換してセットする。
 #### Parser.commandType
-コマンドの種類のparser.commandを返す。
+コマンドの種類のcommand iotaを返す。
 具体的にはcurrentCommandの先頭の要素を見て返す。
 今回はまずarithmetic(add), pushを抑える。
 #### Parser.arg1
-parser.command interfaceを受取る。
 parser.arithmeticだった場合は、currentCommandの先頭の要素を返す。currentCommand[0]
 parser.returnは明示的にerrorを返すようにする。
 parser.return以外の場合はcurrentCommand[1]を返す。
 #### Parser.arg2
-parser.command interfaceを受け取る。
 parser.push, parser.pop, parser.function, parser.callの場合はcurrentCommand[2]を返す。
 それ以外の場合は明示的にエラーを返すようにする。
 #### parser.push.parse
@@ -62,11 +60,11 @@ parser.push, parser.pop, parser.function, parser.callの場合はcurrentCommand[
 #### Parser.Parse
 上のメソッドたちを組み合わせる。
 最終的にはcodewriter.Commandの配列resutlsを返す
-for p.hasMoreCommandで回し、p.commandTypeでparser.command interfaceを生成する。
-command.parseでcodeWriter.commandを生成する。
+for p.hasMoreCommandで回し、p.commandTypeでparser.command iotaを生成する。
 それをresutlsに追加する。
 そして、p.advanceで次に進める
-####
+#### parser.parseArithmetic
+#### parser.parsePush
 ### codeWriter package
 #### CodeWriter構造体
 ```
