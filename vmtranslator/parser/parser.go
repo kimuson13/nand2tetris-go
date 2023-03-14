@@ -19,22 +19,11 @@ type Parser struct {
 }
 
 func New(raw string) (Parser, error) {
-	rawLines := strings.Split(raw, NEW_LINE)
-	commands := make([]string, 0, len(rawLines))
 	p := Parser{}
-	for _, line := range rawLines {
-		spaceTrimedLine := strings.TrimSpace(line)
 
-		if isNotCommand(spaceTrimedLine) {
-			continue
-		}
-
-		command, err := trimComment(spaceTrimedLine)
-		if err != nil {
-			return p, fmt.Errorf("parser new error: %w", err)
-		}
-
-		commands = append(commands, command)
+	commands, err := getCommands(raw)
+	if err != nil {
+		return p, fmt.Errorf("parser new error: %w", err)
 	}
 
 	p.commands = commands
@@ -42,6 +31,37 @@ func New(raw string) (Parser, error) {
 	p.currentCommand = firstCommand
 
 	return p, nil
+}
+
+func getCommands(raw string) ([]string, error) {
+	rawLines := strings.Split(raw, NEW_LINE)
+	commands := make([]string, 0, len(rawLines))
+	for _, line := range rawLines {
+		command, err := getCommand(line)
+		if err != nil {
+			return commands, fmt.Errorf("getCommands error: %w", err)
+		}
+		if command != "" {
+			commands = append(commands, command)
+		}
+	}
+
+	return commands, nil
+}
+
+func getCommand(line string) (string, error) {
+	spaceTrimedLine := strings.TrimSpace(line)
+
+	if isNotCommand(spaceTrimedLine) {
+		return "", nil
+	}
+
+	command, err := trimComment(spaceTrimedLine)
+	if err != nil {
+		return "", fmt.Errorf("getCommand error: %w", err)
+	}
+
+	return command, nil
 }
 
 func isNotCommand(val string) bool {
