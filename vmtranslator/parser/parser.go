@@ -87,8 +87,8 @@ func trimComment(line string) (string, error) {
 
 	if isIncludeComment {
 		commentIdx := strings.Index(line, "//")
-		return line[:commentIdx], nil
+		line = line[:commentIdx]
 	}
 
-	return line, nil
+	return strings.TrimSpace(line), nil
 }
