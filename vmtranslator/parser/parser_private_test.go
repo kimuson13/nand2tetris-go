@@ -216,6 +216,74 @@ func TestParser_commandType(t *testing.T) {
 	}
 }
 
+func TestParser_arg1(t *testing.T) {
+	const wantErr, noErr = true, false
+	testCases := map[string]struct {
+		opt     ParserOption
+		in      command
+		want    string
+		wantErr bool
+	}{
+		"add":  {currentCommand("add"), C_ARITHMETIC, "add", noErr},
+		"push": {currentCommand("push", "constant", "6"), C_PUSH, "constant", noErr},
+	}
+
+	for name, tc := range testCases {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			parser := genParser(tc.opt)
+
+			got, err := parser.arg1(tc.in)
+			if err != nil && !tc.wantErr {
+				t.Error(err)
+			}
+
+			if err == nil && tc.wantErr {
+				t.Errorf("no err: %v", tc.in)
+			}
+
+			if got != tc.want {
+				t.Errorf("want = %s, but got = %s", tc.want, got)
+			}
+		})
+	}
+}
+
+func TestParser_arg2(t *testing.T) {
+	const wantErr, noErr = true, false
+	testCases := map[string]struct {
+		opt     ParserOption
+		in      command
+		want    int
+		wantErr bool
+	}{
+		"add":  {currentCommand("add"), C_ARITHMETIC, 0, wantErr},
+		"push": {currentCommand("push", "constant", "6"), C_PUSH, 6, noErr},
+	}
+
+	for name, tc := range testCases {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			parser := genParser(tc.opt)
+
+			got, err := parser.arg2(tc.in)
+			if err != nil && !tc.wantErr {
+				t.Error(err)
+			}
+
+			if err == nil && tc.wantErr {
+				t.Errorf("no err: %v", tc.in)
+			}
+
+			if got != tc.want {
+				t.Errorf("want = %d, but got = %d", tc.want, got)
+			}
+		})
+	}
+}
+
 func s[T any](val ...T) []T {
 	return val
 }

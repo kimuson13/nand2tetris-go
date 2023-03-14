@@ -3,12 +3,14 @@ package parser
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 )
 
 const NEW_LINE = "\n"
 
 var (
+	ErrInvalidCommand        = errors.New("invalid command")
 	ErrNoSuchACommandType    = errors.New("no such a command type")
 	ErrTooManyCommentLiteral = errors.New("too many comment literal")
 )
@@ -114,4 +116,25 @@ func (p Parser) commandType() command {
 	}
 
 	return INVALID
+}
+
+func (p Parser) arg1(c command) (string, error) {
+	if c == C_ARITHMETIC {
+		return p.currentCommand[0], nil
+	}
+
+	return p.currentCommand[1], nil
+}
+
+func (p Parser) arg2(c command) (int, error) {
+	if c == C_PUSH {
+		arg2, err := strconv.Atoi(p.currentCommand[2])
+		if err != nil {
+			return 0, fmt.Errorf("arg2 error: %w", err)
+		}
+
+		return arg2, nil
+	}
+
+	return 0, fmt.Errorf("arg2 error: %w", ErrInvalidCommand)
 }
