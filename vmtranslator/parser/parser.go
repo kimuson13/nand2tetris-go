@@ -92,3 +92,7 @@ func trimComment(line string) (string, error) {
 
 	return strings.TrimSpace(line), nil
 }
+
+func (p Parser) hasMoreCommand() bool {
+	return p.currentIdx < len(p.commands)
+}

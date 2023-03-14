@@ -146,8 +146,55 @@ func TestTrimComment(t *testing.T) {
 	}
 }
 
+func TestParser_hasMoreCommand(t *testing.T) {
+	testCases := map[string]struct {
+		opts []ParserOption
+		want bool
+	}{
+		"hasMore":     {s(currentIdx(0), commands("hoge", "huga")), true},
+		"not_hasMore": {s(currentIdx(5), commands("hoge", "huga")), false},
+	}
+
+	for name, tc := range testCases {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			parser := genParser(tc.opts...)
+			if got := parser.hasMoreCommand(); got != tc.want {
+				t.Errorf("want = %v, but got = %v", tc.want, got)
+			}
+		})
+	}
+}
+
 func s[T any](val ...T) []T {
 	return val
+}
+
+type ParserOption func(val *Parser)
+
+func genParser(opts ...ParserOption) Parser {
+	parser := Parser{}
+
+	for _, opt := range opts {
+		opt(&parser)
+	}
+
+	return parser
+}
+
+func commands(v ...string) ParserOption {
+	return func(val *Parser) {
+		slice := s(v...)
+		val.commands = slice
+	}
+}
+
+func currentIdx(v int) ParserOption {
+	return func(val *Parser) {
+		val.currentIdx = v
+	}
 }
 
 // test format
