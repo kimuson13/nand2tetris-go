@@ -194,6 +194,28 @@ func TestParser_advance(t *testing.T) {
 	}
 }
 
+func TestParser_commandType(t *testing.T) {
+	testCases := map[string]struct {
+		in   ParserOption
+		want command
+	}{
+		"add_arithmetic": {currentCommand("add"), C_ARITHMETIC},
+		"push":           {currentCommand("push", "constant", "6"), C_PUSH},
+	}
+
+	for name, tc := range testCases {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			parser := genParser(tc.in)
+
+			if got := parser.commandType(); got != tc.want {
+				t.Errorf("want = %d, but got = %d", tc.want, got)
+			}
+		})
+	}
+}
+
 func s[T any](val ...T) []T {
 	return val
 }
