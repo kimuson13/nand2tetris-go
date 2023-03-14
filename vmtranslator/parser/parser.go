@@ -6,39 +6,35 @@ import (
 	"strings"
 )
 
+const NEW_LINE = "\n"
+
+var (
+	ErrTooManyCommentLiteral = errors.New("too many comment literal")
+)
+
 type Parser struct {
 	currentIdx     int
 	currentCommand []string
 	commands       []string
 }
 
-var (
-	ErrTooManyCommentLiteral = errors.New("too many comment literal")
-)
-
 func New(raw string) (Parser, error) {
-	rawLines := strings.Split(raw, "\n")
+	rawLines := strings.Split(raw, NEW_LINE)
 	commands := make([]string, 0, len(rawLines))
 	p := Parser{}
 	for _, line := range rawLines {
-		trimLine := strings.TrimSpace(line)
+		spaceTrimedLine := strings.TrimSpace(line)
 
-		if isNotCommand(trimLine) {
+		if isNotCommand(spaceTrimedLine) {
 			continue
 		}
 
-		isIncludeComment := strings.Contains(trimLine, "//")
-		commentLitCnt := strings.Count(trimLine, "//")
-		if commentLitCnt > 1 {
-			return p, fmt.Errorf("parser new error: %w", ErrTooManyCommentLiteral)
+		command, err := trimComment(spaceTrimedLine)
+		if err != nil {
+			return p, fmt.Errorf("parser new error: %w", err)
 		}
 
-		if isIncludeComment {
-			commentIdx := strings.Index(trimLine, "//")
-			trimLine = trimLine[:commentIdx]
-		}
-
-		commands = append(commands, trimLine)
+		commands = append(commands, command)
 	}
 
 	p.commands = commands
@@ -60,4 +56,19 @@ func isNotCommand(val string) bool {
 	}
 
 	return false
+}
+
+func trimComment(line string) (string, error) {
+	isIncludeComment := strings.Contains(line, "//")
+	commentLitCnt := strings.Count(line, "//")
+	if commentLitCnt > 1 {
+		return "", fmt.Errorf("trimComment error: %w", ErrTooManyCommentLiteral)
+	}
+
+	if isIncludeComment {
+		commentIdx := strings.Index(line, "//")
+		return line[:commentIdx], nil
+	}
+
+	return line, nil
 }
