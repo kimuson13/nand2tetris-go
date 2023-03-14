@@ -9,6 +9,7 @@ import (
 const NEW_LINE = "\n"
 
 var (
+	ErrNoSuchACommandType    = errors.New("no such a command type")
 	ErrTooManyCommentLiteral = errors.New("too many comment literal")
 )
 
@@ -101,4 +102,16 @@ func (p *Parser) advance() {
 	p.currentIdx++
 	nextCommand := p.commands[p.currentIdx]
 	p.currentCommand = strings.Split(nextCommand, " ")
+}
+
+func (p Parser) commandType() (command, error) {
+	head := commandType(p.currentCommand[0])
+	switch head {
+	case ADD:
+		return arithmetic{}, nil
+	case PUSH:
+		return push{}, nil
+	}
+
+	return nil, fmt.Errorf("commandType error: %w, %s", ErrNoSuchACommandType, head)
 }

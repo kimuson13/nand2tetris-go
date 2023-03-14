@@ -1,6 +1,6 @@
 package parser
 
-import "vmtranslator/parser/codewriter"
+import "vmtranslator/codewriter"
 
 type command interface {
 	parse() (codewriter.Command, error)
