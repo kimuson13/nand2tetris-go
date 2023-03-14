@@ -96,3 +96,9 @@ func trimComment(line string) (string, error) {
 func (p Parser) hasMoreCommand() bool {
 	return p.currentIdx < len(p.commands)
 }
+
+func (p *Parser) advance() {
+	p.currentIdx++
+	nextCommand := p.commands[p.currentIdx]
+	p.currentCommand = strings.Split(nextCommand, " ")
+}

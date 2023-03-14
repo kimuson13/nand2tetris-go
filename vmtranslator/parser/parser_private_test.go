@@ -168,6 +168,32 @@ func TestParser_hasMoreCommand(t *testing.T) {
 	}
 }
 
+func TestParser_advance(t *testing.T) {
+	testCases := map[string]struct {
+		opts []ParserOption
+		want Parser
+	}{
+		"advance": {
+			s(currentIdx(0), commands("add", "push constant 6")),
+			genParser(currentIdx(1), commands("add", "push constant 6"), currentCommand("push", "constant", "6")),
+		},
+	}
+
+	for name, tc := range testCases {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			parser := genParser(tc.opts...)
+			parser.advance()
+
+			if diff := cmp.Diff(tc.want, parser, cmp.AllowUnexported(Parser{})); diff != "" {
+				t.Errorf("want:\n%#v\ngot:\n%#v\n%s", tc.want, parser, diff)
+			}
+		})
+	}
+}
+
 func s[T any](val ...T) []T {
 	return val
 }
@@ -194,6 +220,13 @@ func commands(v ...string) ParserOption {
 func currentIdx(v int) ParserOption {
 	return func(val *Parser) {
 		val.currentIdx = v
+	}
+}
+
+func currentCommand(v ...string) ParserOption {
+	return func(val *Parser) {
+		slice := s(v...)
+		val.currentCommand = slice
 	}
 }
 
