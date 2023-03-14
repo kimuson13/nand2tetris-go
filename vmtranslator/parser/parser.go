@@ -97,6 +97,26 @@ func trimComment(line string) (string, error) {
 	return strings.TrimSpace(line), nil
 }
 
+func (p Parser) Parse() ([]codewriter.Command, error) {
+	results := make([]codewriter.Command, 0, len(p.commands))
+
+	for p.hasMoreCommand() {
+		cType := p.commandType()
+		command, err := p.parse(cType)
+		if err != nil {
+			return results, fmt.Errorf("Parse error: %w", err)
+		}
+
+		if command != nil {
+			results = append(results, command)
+		}
+
+		p.advance()
+	}
+
+	return results, nil
+}
+
 func (p Parser) hasMoreCommand() bool {
 	return p.currentIdx < len(p.commands)
 }
@@ -130,7 +150,7 @@ func (p Parser) parse(c command) (codewriter.Command, error) {
 	case C_PUSH:
 	}
 
-	return nil, nil
+	return nil, fmt.Errorf("parse error: %w", ErrNoSuchACommandType)
 }
 
 func (p Parser) parseArithmetic() (codewriter.Arithmetic, error) {
