@@ -104,14 +104,14 @@ func (p *Parser) advance() {
 	p.currentCommand = strings.Split(nextCommand, " ")
 }
 
-func (p Parser) commandType() (command, error) {
+func (p Parser) commandType() command {
 	head := commandType(p.currentCommand[0])
 	switch head {
 	case ADD:
-		return arithmetic{}, nil
+		return C_ARITHMETIC
 	case PUSH:
-		return push{}, nil
+		return C_PUSH
 	}
 
-	return nil, fmt.Errorf("commandType error: %w, %s", ErrNoSuchACommandType, head)
+	return INVALID
 }
