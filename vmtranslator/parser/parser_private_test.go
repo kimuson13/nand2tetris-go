@@ -2,6 +2,7 @@ package parser
 
 import (
 	"testing"
+	"vmtranslator/codewriter"
 
 	"github.com/google/go-cmp/cmp"
 )
@@ -211,6 +212,72 @@ func TestParser_commandType(t *testing.T) {
 
 			if got := parser.commandType(); got != tc.want {
 				t.Errorf("want = %d, but got = %d", tc.want, got)
+			}
+		})
+	}
+}
+
+func TestParser_parse(t *testing.T) {
+	testCases := map[string]struct {
+		opt  ParserOption
+		in   command
+		want codewriter.Command
+	}{
+		"add": {
+			opt: currentCommand("add"),
+			in:  C_ARITHMETIC,
+			want: codewriter.Arithmetic{
+				Kind: codewriter.ADD,
+			},
+		},
+	}
+
+	for name, tc := range testCases {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			p := genParser(tc.opt)
+
+			got, err := p.parse(tc.in)
+			if err != nil {
+				t.Error(err)
+			}
+
+			if diff := cmp.Diff(tc.want, got); diff != "" {
+				t.Error(diff)
+			}
+		})
+	}
+}
+
+func TestParser_parseArithmetic(t *testing.T) {
+	testCases := map[string]struct {
+		opt  ParserOption
+		want codewriter.Arithmetic
+	}{
+		"add": {
+			opt: currentCommand("add"),
+			want: codewriter.Arithmetic{
+				Kind: codewriter.ADD,
+			},
+		},
+	}
+
+	for name, tc := range testCases {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			p := genParser(tc.opt)
+
+			got, err := p.parseArithmetic()
+			if err != nil {
+				t.Error(err)
+			}
+
+			if diff := cmp.Diff(tc.want, got); diff != "" {
+				t.Error(diff)
 			}
 		})
 	}
