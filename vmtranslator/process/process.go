@@ -20,7 +20,7 @@ func Run(args []string) error {
 		return fmt.Errorf("process error: %w", ErrInvalidArgs)
 	}
 
-	base := filepath.Base(args[0])
+	dir, base := filepath.Split(args[0])
 	ext := filepath.Ext(args[0])
 	if ext != ".vm" {
 		return fmt.Errorf("process error: %w", ErrInvalidFileExtension)
@@ -43,7 +43,7 @@ func Run(args []string) error {
 		return fmt.Errorf("procee error: %w", err)
 	}
 
-	codeWriter, err := codewriter.New(commands, fileName)
+	codeWriter, err := codewriter.New(commands, filepath.Join(dir, fileName))
 	if err != nil {
 		return fmt.Errorf("process error: %w", err)
 	}
