@@ -160,7 +160,7 @@ func (p Parser) parseArithmetic() (codewriter.Arithmetic, error) {
 		return arithmetic, fmt.Errorf("arithmetci error : %w", err)
 	}
 
-	kind, err := mapCommandTypeToCodeWriterKind(commandType(cType))
+	kind, err := mapCommandTypeToArithmeticKind(commandType(cType))
 	if err != nil {
 		return arithmetic, fmt.Errorf("arithmetic error: %w", err)
 	}
@@ -169,7 +169,7 @@ func (p Parser) parseArithmetic() (codewriter.Arithmetic, error) {
 	return arithmetic, nil
 }
 
-func mapCommandTypeToCodeWriterKind(cType commandType) (codewriter.ArithmeticKind, error) {
+func mapCommandTypeToArithmeticKind(cType commandType) (codewriter.ArithmeticKind, error) {
 	mp := map[commandType]codewriter.ArithmeticKind{
 		ADD: codewriter.ADD,
 	}
