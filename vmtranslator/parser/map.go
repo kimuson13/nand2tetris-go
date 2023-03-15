@@ -12,7 +12,15 @@ var (
 
 func mapCommandTypeToArithmeticKind(cType commandType) (codewriter.ArithmeticKind, error) {
 	mp := map[commandType]codewriter.ArithmeticKind{
-		ADD: codewriter.ADD,
+		ADD:          codewriter.ADD,
+		SUB:          codewriter.SUB,
+		NEGATIVE:     codewriter.NEGATIVE,
+		EQUAL:        codewriter.EQUAL,
+		GREATER_THAN: codewriter.GREATER_THAN,
+		LOWER_THAN:   codewriter.LOWER_THAN,
+		AND:          codewriter.AND,
+		OR:           codewriter.OR,
+		NOT:          codewriter.NOT,
 	}
 
 	val, ok := mp[cType]

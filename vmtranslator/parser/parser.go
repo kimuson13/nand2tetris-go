@@ -132,7 +132,7 @@ func (p *Parser) advance() {
 func (p Parser) commandType() command {
 	head := commandType(p.currentCommand[0])
 	switch head {
-	case ADD:
+	case ADD, SUB, NEGATIVE, EQUAL, GREATER_THAN, LOWER_THAN, AND, OR, NOT:
 		return C_ARITHMETIC
 	case PUSH:
 		return C_PUSH

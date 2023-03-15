@@ -6,6 +6,14 @@ type ArithmeticKind int
 
 const (
 	ADD ArithmeticKind = iota
+	SUB
+	NEGATIVE
+	EQUAL
+	GREATER_THAN
+	LOWER_THAN
+	AND
+	OR
+	NOT
 )
 
 type Arithmetic struct {
