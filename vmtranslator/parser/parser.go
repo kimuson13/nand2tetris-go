@@ -123,8 +123,10 @@ func (p Parser) hasMoreCommand() bool {
 
 func (p *Parser) advance() {
 	p.currentIdx++
-	nextCommand := p.commands[p.currentIdx]
-	p.currentCommand = strings.Split(nextCommand, " ")
+	if p.hasMoreCommand() {
+		nextCommand := p.commands[p.currentIdx]
+		p.currentCommand = strings.Split(nextCommand, " ")
+	}
 }
 
 func (p Parser) commandType() command {
