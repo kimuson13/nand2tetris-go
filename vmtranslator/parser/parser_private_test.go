@@ -178,6 +178,10 @@ func TestParser_advance(t *testing.T) {
 			s(currentIdx(0), commands("add", "push constant 6")),
 			genParser(currentIdx(1), commands("add", "push constant 6"), currentCommand("push", "constant", "6")),
 		},
+		"last_call": {
+			s(currentIdx(1), commands("add")),
+			genParser(currentIdx(2), commands("add")),
+		},
 	}
 
 	for name, tc := range testCases {
