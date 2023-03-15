@@ -178,6 +178,10 @@ func TestParser_advance(t *testing.T) {
 			s(currentIdx(0), commands("add", "push constant 6")),
 			genParser(currentIdx(1), commands("add", "push constant 6"), currentCommand("push", "constant", "6")),
 		},
+		"last_call": {
+			s(currentIdx(1), commands("add")),
+			genParser(currentIdx(2), commands("add")),
+		},
 	}
 
 	for name, tc := range testCases {
@@ -272,6 +276,39 @@ func TestParser_parseArithmetic(t *testing.T) {
 			p := genParser(tc.opt)
 
 			got, err := p.parseArithmetic()
+			if err != nil {
+				t.Error(err)
+			}
+
+			if diff := cmp.Diff(tc.want, got); diff != "" {
+				t.Error(diff)
+			}
+		})
+	}
+}
+
+func TestParse_parsePush(t *testing.T) {
+	testCases := map[string]struct {
+		opt  ParserOption
+		want codewriter.Push
+	}{
+		"constant": {
+			opt: currentCommand("push", "constant", "6"),
+			want: codewriter.Push{
+				Segment: codewriter.CONSTANT,
+				Index:   6,
+			},
+		},
+	}
+
+	for name, tc := range testCases {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			p := genParser(tc.opt)
+
+			got, err := p.parsePush()
 			if err != nil {
 				t.Error(err)
 			}
