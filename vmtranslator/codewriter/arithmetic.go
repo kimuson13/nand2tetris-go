@@ -23,7 +23,7 @@ func (a Arithmetic) convert() ([]byte, error) {
 func (a Arithmetic) genAsm() []byte {
 	switch a.Kind {
 	case ADD:
-		return a.genAsm()
+		return a.genAdd()
 	}
 
 	return nil
