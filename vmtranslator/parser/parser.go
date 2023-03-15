@@ -148,6 +148,11 @@ func (p Parser) parse(c command) (codewriter.Command, error) {
 		}
 		return command, nil
 	case C_PUSH:
+		command, err := p.parsePush()
+		if err != nil {
+			return nil, fmt.Errorf("parse error: %w", err)
+		}
+		return command, nil
 	}
 
 	return nil, fmt.Errorf("parse error: %w", ErrNoSuchACommandType)
@@ -167,6 +172,29 @@ func (p Parser) parseArithmetic() (codewriter.Arithmetic, error) {
 
 	arithmetic.Kind = kind
 	return arithmetic, nil
+}
+
+func (p Parser) parsePush() (codewriter.Push, error) {
+	var push codewriter.Push
+	arg1, err := p.arg1(C_PUSH)
+	if err != nil {
+		return push, fmt.Errorf("push error: %w", err)
+	}
+
+	segment, err := mapSegment(arg1)
+	if err != nil {
+		return push, fmt.Errorf("push error: %w", err)
+	}
+
+	index, err := p.arg2(C_PUSH)
+	if err != nil {
+		return push, fmt.Errorf("push error: %w", err)
+	}
+
+	push.Segment = segment
+	push.Index = index
+
+	return push, nil
 }
 
 func (p Parser) arg1(c command) (string, error) {
