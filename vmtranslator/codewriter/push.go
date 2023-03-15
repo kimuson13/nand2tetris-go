@@ -33,11 +33,7 @@ func (p Push) genAsm() []byte {
 }
 
 func (p Push) genConstant() []byte {
-	asm := fmt.Sprintf(constantAsm, p.Index)
-	return []byte(asm)
-}
-
-const constantAsm = `
+	const constantAsm = `
 @%d
 D=A
 @SP
@@ -46,3 +42,7 @@ M=D
 @SP
 M=M+1
 `
+
+	asm := fmt.Sprintf(constantAsm, p.Index)
+	return []byte(asm)
+}
