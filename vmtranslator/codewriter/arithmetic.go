@@ -111,6 +111,7 @@ M=0
 0;JMP
 (TRUE%[1]s)
 @SP
+A=M
 M=0
 M=-1
 (NEXT%[1]s)
