@@ -21,6 +21,14 @@ func New(commands []Command, fileName string) (CodeWriter, error) {
 
 	codeWriter.commands = commands
 	codeWriter.file = f
+	const initAsm = `@256
+D=A
+@SP
+M=D
+`
+	if _, err := f.Write([]byte(initAsm)); err != nil {
+		return codeWriter, fmt.Errorf("code writer new error: %w", err)
+	}
 
 	return codeWriter, nil
 }

@@ -134,6 +134,7 @@ M=M+1
 func (a Arithmetic) genAnd() []byte {
 	const andAsm = `
 @SP
+A=M
 A=A-1
 D=M
 A=A-1
@@ -147,6 +148,7 @@ M=M-1
 func (a Arithmetic) genOr() []byte {
 	const orAsm = `
 @SP
+A=M
 A=A-1
 D=M
 A=A-1
