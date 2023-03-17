@@ -136,6 +136,8 @@ func (p Parser) commandType() command {
 		return C_ARITHMETIC
 	case PUSH:
 		return C_PUSH
+	case POP:
+		return C_POP
 	}
 
 	return INVALID
@@ -151,6 +153,12 @@ func (p Parser) parse(c command) (codewriter.Command, error) {
 		return command, nil
 	case C_PUSH:
 		command, err := p.parsePush()
+		if err != nil {
+			return nil, fmt.Errorf("parse error: %w", err)
+		}
+		return command, nil
+	case C_POP:
+		command, err := p.parsePop()
 		if err != nil {
 			return nil, fmt.Errorf("parse error: %w", err)
 		}
@@ -197,6 +205,29 @@ func (p Parser) parsePush() (codewriter.Push, error) {
 	push.Index = index
 
 	return push, nil
+}
+
+func (p Parser) parsePop() (codewriter.Pop, error) {
+	var pop codewriter.Pop
+	arg1, err := p.arg1(C_POP)
+	if err != nil {
+		return pop, fmt.Errorf("pop error: %w", err)
+	}
+
+	segment, err := mapSegment(arg1)
+	if err != nil {
+		return pop, fmt.Errorf("pop error: %w", err)
+	}
+
+	index, err := p.arg2(C_PUSH)
+	if err != nil {
+		return pop, fmt.Errorf("pop error: %w", err)
+	}
+
+	pop.Segment = segment
+	pop.Index = index
+
+	return pop, nil
 }
 
 func (p Parser) arg1(c command) (string, error) {
