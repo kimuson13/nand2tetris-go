@@ -234,6 +234,13 @@ func TestParser_parse(t *testing.T) {
 				Kind: codewriter.ADD,
 			},
 		},
+		"greater_than": {
+			opt: currentCommand("gt"),
+			in:  C_ARITHMETIC,
+			want: codewriter.Arithmetic{
+				Kind: codewriter.GREATER_THAN,
+			},
+		},
 	}
 
 	for name, tc := range testCases {
@@ -264,6 +271,12 @@ func TestParser_parseArithmetic(t *testing.T) {
 			opt: currentCommand("add"),
 			want: codewriter.Arithmetic{
 				Kind: codewriter.ADD,
+			},
+		},
+		"not": {
+			opt: currentCommand("not"),
+			want: codewriter.Arithmetic{
+				Kind: codewriter.NOT,
 			},
 		},
 	}

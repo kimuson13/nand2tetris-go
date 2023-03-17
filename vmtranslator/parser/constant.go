@@ -3,8 +3,16 @@ package parser
 type commandType string
 
 const (
-	ADD  commandType = "add"
-	PUSH commandType = "push"
+	ADD          commandType = "add"
+	SUB          commandType = "sub"
+	NEGATIVE     commandType = "neg"
+	EQUAL        commandType = "eq"
+	GREATER_THAN commandType = "gt"
+	LOWER_THAN   commandType = "lt"
+	AND          commandType = "and"
+	OR           commandType = "or"
+	NOT          commandType = "not"
+	PUSH         commandType = "push"
 )
 
 type command int
