@@ -46,3 +46,36 @@ M=M+1
 	asm := fmt.Sprintf(constantAsm, p.Index)
 	return []byte(asm)
 }
+
+func (p Push) genMemoryAccess() []byte {
+	const memoryAccess = `
+@%d
+D=A
+%s
+A=A+D
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+`
+
+	var line string
+	switch p.Segment {
+	case LOCAL:
+		line = "@LCL\nA=M"
+	case ARGUMENT:
+		line = "@ARG\nA=M"
+	case THAT:
+		line = "@THAT\nA=M"
+	case THIS:
+		line = "@THIS\nA=M"
+	case TEMP:
+		line = "@5\n"
+	case POINTER:
+		line = "@3\n"
+	}
+
+	return []byte(fmt.Sprintf(memoryAccess, p.Index, line))
+}
