@@ -19,7 +19,7 @@ func TestNew(t *testing.T) {
 func TestParse(t *testing.T) {
 	in := "push constant 6\nadd"
 	want := []codewriter.Command{
-		codewriter.Push{Segment: codewriter.CONSTANT, Index: 6},
+		codewriter.Push{FileName: "hoge", Segment: codewriter.CONSTANT, Index: 6},
 		codewriter.Arithmetic{Kind: codewriter.ADD},
 	}
 

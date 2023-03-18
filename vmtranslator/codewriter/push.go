@@ -6,9 +6,9 @@ import (
 )
 
 type Push struct {
-	Id      string
-	Segment Segment
-	Index   int
+	FileName string
+	Segment  Segment
+	Index    int
 }
 
 var (

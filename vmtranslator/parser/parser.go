@@ -203,6 +203,7 @@ func (p Parser) parsePush() (codewriter.Push, error) {
 		return push, fmt.Errorf("push error: %w", err)
 	}
 
+	push.FileName = p.fileName
 	push.Segment = segment
 	push.Index = index
 
@@ -226,6 +227,7 @@ func (p Parser) parsePop() (codewriter.Pop, error) {
 		return pop, fmt.Errorf("pop error: %w", err)
 	}
 
+	pop.FileName = p.fileName
 	pop.Segment = segment
 	pop.Index = index
 
