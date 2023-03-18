@@ -60,6 +60,8 @@ M=M-1
 		line = "@ARG\nA=M"
 	case THAT:
 		line = "@THAT\nA=M"
+	case THIS:
+		line = "@THIS\nA=M"
 	case TEMP:
 		line = "@5"
 	case POINTER:
