@@ -30,9 +30,8 @@ func (p Push) genAsm() []byte {
 		return p.genConstant()
 	case ARGUMENT, LOCAL, THAT, THIS, POINTER, TEMP:
 		return p.genMemoryAccess()
-		// case STATIC:
-		// 	return p.gen
-
+	case STATIC:
+		return p.genStatic()
 	}
 
 	return nil
@@ -84,4 +83,17 @@ M=M+1
 	}
 
 	return []byte(fmt.Sprintf(memoryAccess, p.Index, line))
+}
+
+func (p Push) genStatic() []byte {
+	const asm = `
+@%s_%d
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+`
+	return []byte(fmt.Sprintf(asm, p.FileName, p.Index))
 }
