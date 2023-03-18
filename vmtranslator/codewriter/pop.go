@@ -1,6 +1,9 @@
 package codewriter
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type Pop struct {
 	FileName string
@@ -30,7 +33,8 @@ M=D
 @SP
 M=M-1
 `
-	return []byte(fmt.Sprintf(asm, p.FileName, p.Index))
+	upperFileName := strings.ToUpper(p.FileName)
+	return []byte(fmt.Sprintf(asm, upperFileName, p.Index))
 }
 
 func (p Pop) genMemoryAccess() []byte {
