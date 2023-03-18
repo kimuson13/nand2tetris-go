@@ -33,7 +33,14 @@ func mapCommandTypeToArithmeticKind(cType commandType) (codewriter.ArithmeticKin
 
 func mapSegment(raw string) (codewriter.Segment, error) {
 	mp := map[string]codewriter.Segment{
+		"argument": codewriter.ARGUMENT,
+		"local":    codewriter.LOCAL,
+		"static":   codewriter.STATIC,
 		"constant": codewriter.CONSTANT,
+		"this":     codewriter.THIS,
+		"that":     codewriter.THAT,
+		"pointer":  codewriter.POINTER,
+		"temp":     codewriter.TEMP,
 	}
 
 	val, ok := mp[raw]

@@ -69,17 +69,17 @@ M=M+1
 	var line string
 	switch p.Segment {
 	case LOCAL:
-		line = "@LCL\nA=M\n"
+		line = "@LCL\nA=M"
 	case ARGUMENT:
-		line = "@ARG\nA=M\n"
+		line = "@ARG\nA=M"
 	case THAT:
-		line = "@THAT\nA=M\n"
+		line = "@THAT\nA=M"
 	case THIS:
-		line = "@THIS\nA=M\n"
+		line = "@THIS\nA=M"
 	case TEMP:
-		line = "@5\n"
+		line = "@5"
 	case POINTER:
-		line = "@3\n"
+		line = "@3"
 	}
 
 	return []byte(fmt.Sprintf(memoryAccess, p.Index, line))
