@@ -3,11 +3,13 @@ package codewriter
 import (
 	"errors"
 	"fmt"
+	"strings"
 )
 
 type Push struct {
-	Segment Segment
-	Index   int
+	FileName string
+	Segment  Segment
+	Index    int
 }
 
 var (
@@ -27,6 +29,10 @@ func (p Push) genAsm() []byte {
 	switch p.Segment {
 	case CONSTANT:
 		return p.genConstant()
+	case ARGUMENT, LOCAL, THAT, THIS, POINTER, TEMP:
+		return p.genMemoryAccess()
+	case STATIC:
+		return p.genStatic()
 	}
 
 	return nil
@@ -45,4 +51,51 @@ M=M+1
 
 	asm := fmt.Sprintf(constantAsm, p.Index)
 	return []byte(asm)
+}
+
+func (p Push) genMemoryAccess() []byte {
+	const memoryAccess = `
+@%d
+D=A
+%s
+A=A+D
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+`
+
+	var line string
+	switch p.Segment {
+	case LOCAL:
+		line = "@LCL\nA=M"
+	case ARGUMENT:
+		line = "@ARG\nA=M"
+	case THAT:
+		line = "@THAT\nA=M"
+	case THIS:
+		line = "@THIS\nA=M"
+	case TEMP:
+		line = "@5"
+	case POINTER:
+		line = "@3"
+	}
+
+	return []byte(fmt.Sprintf(memoryAccess, p.Index, line))
+}
+
+func (p Push) genStatic() []byte {
+	const asm = `
+@%s_%d
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+`
+	fileName := strings.ToUpper(p.FileName)
+	return []byte(fmt.Sprintf(asm, fileName, p.Index))
 }

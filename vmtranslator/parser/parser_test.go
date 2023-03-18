@@ -11,7 +11,7 @@ import (
 func TestNew(t *testing.T) {
 	in := "// comment \n\npush constant 6\nadd // comment"
 
-	if _, err := parser.New(in); err != nil {
+	if _, err := parser.New(in, "hoge"); err != nil {
 		t.Error(err)
 	}
 }
@@ -19,11 +19,11 @@ func TestNew(t *testing.T) {
 func TestParse(t *testing.T) {
 	in := "push constant 6\nadd"
 	want := []codewriter.Command{
-		codewriter.Push{Segment: codewriter.CONSTANT, Index: 6},
+		codewriter.Push{FileName: "hoge", Segment: codewriter.CONSTANT, Index: 6},
 		codewriter.Arithmetic{Kind: codewriter.ADD},
 	}
 
-	p, err := parser.New(in)
+	p, err := parser.New(in, "hoge")
 	if err != nil {
 		t.Fatal(err)
 	}

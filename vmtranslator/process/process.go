@@ -33,7 +33,7 @@ func Run(args []string) error {
 		return fmt.Errorf("process error: %w", err)
 	}
 
-	p, err := parser.New(string(b))
+	p, err := parser.New(string(b), fileName)
 	if err != nil {
 		return fmt.Errorf("process error: %w", err)
 	}
