@@ -3,6 +3,7 @@ package codewriter
 import (
 	"errors"
 	"fmt"
+	"strings"
 )
 
 type Push struct {
@@ -95,5 +96,6 @@ M=D
 @SP
 M=M+1
 `
-	return []byte(fmt.Sprintf(asm, p.FileName, p.Index))
+	fileName := strings.ToUpper(p.FileName)
+	return []byte(fmt.Sprintf(asm, fileName, p.Index))
 }
