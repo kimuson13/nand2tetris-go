@@ -12,9 +12,10 @@ func TestNew(t *testing.T) {
 	want := Parser{
 		commands:       s("push constant 6", "add"),
 		currentCommand: s("push", "constant", "6"),
+		fileName:       "hoge",
 	}
 
-	got, err := New(in)
+	got, err := New(in, "hoge")
 	if err != nil {
 		t.Error(err)
 	}

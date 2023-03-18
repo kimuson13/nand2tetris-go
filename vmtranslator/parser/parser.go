@@ -20,9 +20,10 @@ type Parser struct {
 	currentIdx     int
 	currentCommand []string
 	commands       []string
+	fileName       string
 }
 
-func New(raw string) (Parser, error) {
+func New(raw string, fileName string) (Parser, error) {
 	p := Parser{}
 
 	commands, err := getCommands(raw)
@@ -33,6 +34,7 @@ func New(raw string) (Parser, error) {
 	p.commands = commands
 	firstCommand := strings.Split(p.commands[0], " ")
 	p.currentCommand = firstCommand
+	p.fileName = fileName
 
 	return p, nil
 }

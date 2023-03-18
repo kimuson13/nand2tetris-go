@@ -6,6 +6,7 @@ import (
 )
 
 type Push struct {
+	Id      string
 	Segment Segment
 	Index   int
 }
@@ -27,6 +28,11 @@ func (p Push) genAsm() []byte {
 	switch p.Segment {
 	case CONSTANT:
 		return p.genConstant()
+	case ARGUMENT, LOCAL, THAT, THIS, POINTER, TEMP:
+		return p.genMemoryAccess()
+		// case STATIC:
+		// 	return p.gen
+
 	}
 
 	return nil

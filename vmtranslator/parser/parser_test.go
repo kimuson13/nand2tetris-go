@@ -11,7 +11,7 @@ import (
 func TestNew(t *testing.T) {
 	in := "// comment \n\npush constant 6\nadd // comment"
 
-	if _, err := parser.New(in); err != nil {
+	if _, err := parser.New(in, "hoge"); err != nil {
 		t.Error(err)
 	}
 }
@@ -23,7 +23,7 @@ func TestParse(t *testing.T) {
 		codewriter.Arithmetic{Kind: codewriter.ADD},
 	}
 
-	p, err := parser.New(in)
+	p, err := parser.New(in, "hoge")
 	if err != nil {
 		t.Fatal(err)
 	}
