@@ -1,5 +1,7 @@
 package codewriter
 
+import "fmt"
+
 type Pop struct {
 	FileName string
 	Segment  Segment
@@ -7,5 +9,62 @@ type Pop struct {
 }
 
 func (p Pop) convert() ([]byte, error) {
-	return nil, nil
+	switch p.Segment {
+	case STATIC:
+		return p.genStatic(), nil
+	case LOCAL, ARGUMENT, THAT, THIS, TEMP, POINTER:
+		return p.genMemoryAccess(), nil
+	}
+
+	return nil, fmt.Errorf("pop convert error: %w", ErrCanNotConvert)
+}
+
+func (p Pop) genStatic() []byte {
+	const asm = `
+@SP
+A=M
+A=A-1
+D=M
+@%s_%d
+M=D
+@SP
+M=M-1
+`
+	return []byte(fmt.Sprintf(asm, p.FileName, p.Index))
+}
+
+func (p Pop) genMemoryAccess() []byte {
+	const asm = `
+@%d
+D=A
+%s
+D=D+A
+@temp
+M=D
+@SP
+A=M
+A=A-1
+D=M
+@temp
+A=M
+@M=D
+@SP
+M=M-1
+`
+
+	var line string
+	switch p.Segment {
+	case LOCAL:
+		line = "@LCL\nA=M\n"
+	case ARGUMENT:
+		line = "@ARG\nA=M\n"
+	case THAT:
+		line = "@THAT\nA=M\n"
+	case TEMP:
+		line = "@5\n"
+	case POINTER:
+		line = "@3\n"
+	}
+
+	return []byte(fmt.Sprintf(asm, p.Index, line))
 }

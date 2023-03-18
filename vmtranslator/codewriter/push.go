@@ -69,13 +69,13 @@ M=M+1
 	var line string
 	switch p.Segment {
 	case LOCAL:
-		line = "@LCL\nA=M"
+		line = "@LCL\nA=M\n"
 	case ARGUMENT:
-		line = "@ARG\nA=M"
+		line = "@ARG\nA=M\n"
 	case THAT:
-		line = "@THAT\nA=M"
+		line = "@THAT\nA=M\n"
 	case THIS:
-		line = "@THIS\nA=M"
+		line = "@THIS\nA=M\n"
 	case TEMP:
 		line = "@5\n"
 	case POINTER:
